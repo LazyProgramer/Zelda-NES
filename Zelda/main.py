@@ -7,8 +7,7 @@ SCALE = 3
 GAME_EVENT = pygame.event.custom_type()
 
 PLAYER_SPEED = 6
-BACKGROUND = "white"
-# BACKGROUND = "black"
+BACKGROUND = "black"
 
 """
 missing_area = (256,24)
@@ -23,19 +22,30 @@ main_color = (252, 216, 168)
 display = pygame.display.set_mode((SCALE * WIDTH, SCALE * HEIGHT))
 clock = pygame.time.Clock()
 
-game_map = pygame.image.load("Map.png").convert()
-loaded_map_id = 120 #1800x1240 (8,8)
-# Map coords (256*(x-1)+x,176*(y-1)-y)
+game_map = pygame.image.load("Zelda/Sprites/Map.png").convert()
+global move_map
+move_map = (0,0)
+loaded_map_id = (8,8)
+# Inicial map: 1800x1240 (8,8)
+# Map coords (256*(x-1)+x,176*(y-1)+y)
 
-hubs = pygame.image.load("HUD.png").convert()
+hubs = pygame.image.load("Zelda/Sprites/HUD.png").convert()
 
 player_1 = Player()
 
 # main_surface = pygame.Surface(256*SCALE,256*SCALE).convert_alpha()
 
-def load_map():
+def update_map(new_map):
+    global move_map
+    move_map = (0,0)
+    # print(move_map)
+    return (loaded_map_id[0] + new_map[0],loaded_map_id[1] + new_map[1])
+
+def load_map(x, y):
+    map_x = 256*(x-1)+x
+    map_y = 176*(y-1)+y
     map_surface = pygame.Surface((256,176)).convert_alpha()
-    map_surface.blit(game_map, (0,0), (1800,1240,256,176))
+    map_surface.blit(game_map, (0,0), (map_x,map_y,256,176))
     current_map = pygame.transform.scale(map_surface, (256*SCALE,176*SCALE))
     current_map.set_colorkey((0,128,0))
     display.blit(current_map, (0, 56*SCALE, 256*SCALE,176*SCALE))  
@@ -59,16 +69,27 @@ while running:
             print(event.txt)
 
     if keys_pressed[pygame.K_UP]:
-        player_1.player_move(0, -PLAYER_SPEED, display)
+        move_map = player_1.player_move(0, -PLAYER_SPEED, display)
     elif keys_pressed[pygame.K_DOWN]:
-        player_1.player_move(0, PLAYER_SPEED, display)
+        move_map = player_1.player_move(0, PLAYER_SPEED, display)
     elif keys_pressed[pygame.K_LEFT]:
-        player_1.player_move(-PLAYER_SPEED, 0, display)
+        move_map = player_1.player_move(-PLAYER_SPEED, 0, display)
     elif keys_pressed[pygame.K_RIGHT]:
-        player_1.player_move(PLAYER_SPEED, 0, display)
+        move_map = player_1.player_move(PLAYER_SPEED, 0, display)
+        
+    # if keys_pressed[pygame.K_UP]:
+    #     player_1.player_move(0, -PLAYER_SPEED, display)
+    # elif keys_pressed[pygame.K_DOWN]:
+    #     player_1.player_move(0, PLAYER_SPEED, display)
+    # elif keys_pressed[pygame.K_LEFT]:
+    #     player_1.player_move(-PLAYER_SPEED, 0, display)
+    # elif keys_pressed[pygame.K_RIGHT]:
+    #     player_1.player_move(PLAYER_SPEED, 0, display)
 
     display.fill(BACKGROUND)
-    load_map()
+    
+    loaded_map_id = update_map(move_map)
+    load_map(loaded_map_id[0],loaded_map_id[1])
     load_hud()
     player_1.load_player(display)
     # print(display.get_at((int(256*1.5),int(256*1.5)))[:3])

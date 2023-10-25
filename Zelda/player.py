@@ -1,14 +1,34 @@
+from tkinter import SEL
 import pygame
 
 class Player:
     def __init__(self):
-        self.sprites = pygame.image.load("Link.png")
+        self.sprites = pygame.image.load("Zelda/Sprites/Link.png")
         self.location = (256*1.5,256*1.5)
         self.hitbox = (15,15)
 
     def player_move(self, x, y, display):
+        # Left
+        if (self.location[0] + x <= 0):
+            self.location = (256*3-48, self.location[1])
+            return (-1,0)
+        # Right
+        elif (self.location[0] + x >= 256*3-48):
+            self.location = (0, self.location[1])
+            return (1,0)
+        # Up
+        elif (self.location[1] + y <= 56*3):
+            self.location = (self.location[0], 256*3-48-72)
+            return (0,-1)
+        # Down 
+        elif (self.location[1] + y >= 256*3-72-48):
+            self.location = (self.location[0], 56*3)
+            return (0,1)
+        
         if self.check_next_position(x, y, display):
             self.location = (self.location[0] + x, self.location[1] + y)
+         
+        return (0,0)
 
     """
     TODO
@@ -19,22 +39,22 @@ class Player:
     """
     def check_next_position(self, x, y, display):
         if y == -6:
-            print("UP")
+            # print("UP")
             for i in range(int(self.location[0]), int(self.location[0]+45)):
                 if display.get_at((i,int(self.location[1])+y))[:3] != (252, 216, 168):
                     return False
         elif y == 6:
-            print("DOWN")
+            # print("DOWN")
             for i in range(int(self.location[0]), int(self.location[0]+45)):
                 if display.get_at((i,int(self.location[1]+45+y)))[:3] != (252, 216, 168):
                     return False
         elif x == -6:
-            print("LEFT")
+            # print("LEFT")
             for i in range(int(self.location[1]), int(self.location[1]+45)):
                 if display.get_at((int(self.location[0])+x,i))[:3] != (252, 216, 168):
                     return False
         elif x == 6:
-            print("RIGHT")
+            # print("RIGHT")
             for i in range(int(self.location[1]), int(self.location[1]+45)):
                 if display.get_at((int(self.location[0]+45+x),i))[:3] != (252, 216, 168):
                     return False
