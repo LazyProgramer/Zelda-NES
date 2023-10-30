@@ -30,34 +30,23 @@ class Player:
          
         return (0,0)
 
-    """
-    TODO
-    Add bytonic sort for all posible ground colors
-    Add way to still be able to enter dungeons (probably just use black)
-    Add check if reach edge to change map 
-    Simplify code (I know)
-    """
     def check_next_position(self, x, y, display):
-        if y == -6:
-            # print("UP")
-            for i in range(int(self.location[0]), int(self.location[0]+45)):
-                if display.get_at((i,int(self.location[1])+y))[:3] != (252, 216, 168):
-                    return False
-        elif y == 6:
-            # print("DOWN")
-            for i in range(int(self.location[0]), int(self.location[0]+45)):
-                if display.get_at((i,int(self.location[1]+45+y)))[:3] != (252, 216, 168):
-                    return False
-        elif x == -6:
-            # print("LEFT")
-            for i in range(int(self.location[1]), int(self.location[1]+45)):
-                if display.get_at((int(self.location[0])+x,i))[:3] != (252, 216, 168):
-                    return False
-        elif x == 6:
-            # print("RIGHT")
-            for i in range(int(self.location[1]), int(self.location[1]+45)):
-                if display.get_at((int(self.location[0]+45+x),i))[:3] != (252, 216, 168):
-                    return False
+        l = (((x + y)/6)+1)/2
+        m = 1
+        n = 0
+
+        if x != 0:
+            m = 0
+            n = 1
+
+        # print(f'X:{x}|Y:{y}|N:{n}|M:{m}|L:{l}')
+        # print(f'Coords{((int((self.location[m]+x)*n + 1*m + 45*l)),(int((self.location[m]+y)*m + 1*n + 45*l)))}')
+
+        for i in range(int(self.location[n]), int(self.location[n]+45)):
+            if display.get_at(((int((self.location[m]+x)*n + i*m + 45*l*n)),
+                               (int((self.location[m]+y)*m + i*n + 45*l*m))))[:3] != (252, 216, 168):
+                return False
+            
         return True
 
     def load_player(self, display):
