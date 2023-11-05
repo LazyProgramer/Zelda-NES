@@ -1,11 +1,11 @@
 from tkinter import SEL
 import pygame
 
-from constants import WIDTH, HEIGHT, HUD_HEIGHT,SCALE, PLAYER_SPEED, PLAYER_SIZE, PLAYER_HITBOX
+from constants import WIDTH, HEIGHT, HUD_HEIGHT,SCALE, PLAYER_SPEED, PLAYER_SIZE, PLAYER_HITBOX, MYDIR
 
 class Player:
     def __init__(self, display):
-        self.sprites = pygame.image.load("Zelda/Sprites/Link.png")
+        self.sprites = pygame.image.load(MYDIR+"/Sprites/Link.png")
         self.location = (WIDTH*SCALE/2,HEIGHT*SCALE/2)
 
         self.display = display
@@ -15,21 +15,22 @@ class Player:
     def player_move(self, x, y):
 
         # Map update, updates map if player leaves playble area
+        # PLAYER_SPEED is here or we can cause seizure
         # Load map to the left
         if (self.location[0] + x <= 0):
-            self.location = ((WIDTH-PLAYER_SIZE)*SCALE, self.location[1])
+            self.location = ((WIDTH-PLAYER_SIZE)*SCALE-PLAYER_SPEED, self.location[1])
             return (-1,0)
         # Load map to the right
         elif (self.location[0] + x >= (WIDTH-PLAYER_SIZE)*SCALE):
-            self.location = (0, self.location[1])
+            self.location = (PLAYER_SPEED, self.location[1])
             return (1,0)
         # Load map above
         elif (self.location[1] + y <= HUD_HEIGHT*SCALE):
-            self.location = (self.location[0], (HEIGHT-PLAYER_SIZE)*SCALE)
+            self.location = (self.location[0], (HEIGHT-PLAYER_SIZE)*SCALE-PLAYER_SPEED)
             return (0,-1)
         # Load map below 
         elif (self.location[1] + y >= (HEIGHT-PLAYER_SIZE)*SCALE):
-            self.location = (self.location[0], HUD_HEIGHT*SCALE)
+            self.location = (self.location[0], HUD_HEIGHT*SCALE+PLAYER_SPEED)
             return (0,1)
         
         # Check player collision with map
@@ -49,9 +50,7 @@ class Player:
             m = 0
             n = 1
 
-        # print(f'X:{x}|Y:{y}|N:{n}|M:{m}|L:{l}')
-        # print(f'Coords{((int((self.location[m]+x)*n + 1*m + 45*l)),(int((self.location[m]+y)*m + 1*n + 45*l)))}')
-
+        # Funny calculation to have 1 if statement instead of 8
         for i in range(int(self.location[n]), int(self.location[n]+PLAYER_HITBOX)):
             if self.display.get_at(((int((self.location[m]+x)*n + i*m + PLAYER_HITBOX*l*n)),
                                (int((self.location[m]+y)*m + i*n + PLAYER_HITBOX*l*m))))[:3] != (252, 216, 168):

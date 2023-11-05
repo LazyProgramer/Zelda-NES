@@ -1,3 +1,7 @@
+import os, sys
+
+MYDIR = os.path.abspath(sys.path[0])
+
 WIDTH, HEIGHT = 256, 256-24
 MAP_HEIGHT = 176
 HUD_HEIGHT = 56
