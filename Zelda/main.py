@@ -3,9 +3,11 @@ import pygame
 import input_handler
 
 from commandpad import COMMAND_ARROWS
+from constants import WIDTH, HEIGHT, SCALE, BACKGROUND
+
 from player import Player
 from display_loader import Display_loader
-from constants import WIDTH, HEIGHT, SCALE, BACKGROUND
+from enemies import Octoroc
 
 GAME_EVENT = pygame.event.custom_type()
 
@@ -17,6 +19,13 @@ input_handler = input_handler.InputHandler(COMMAND_ARROWS)
 player_1 = Player(display)
 display_loader = Display_loader()
 pressed_keys = []
+
+octoroc_1 = Octoroc((WIDTH*SCALE/3,HEIGHT*SCALE/2))
+octoroc_2 = Octoroc((WIDTH*SCALE/4,HEIGHT*SCALE/2))
+octoroc_3 = Octoroc((WIDTH*SCALE/3,HEIGHT*SCALE/3))
+octoroc_4 = Octoroc((WIDTH*SCALE-WIDTH*SCALE/4,HEIGHT*SCALE-HEIGHT*SCALE/2))
+octoroc_5 = Octoroc((WIDTH*SCALE-WIDTH*SCALE/3,HEIGHT*SCALE-HEIGHT*SCALE/3))
+enemies = [octoroc_1,octoroc_2,octoroc_3,octoroc_4,octoroc_5]
 
 running = True 
 
@@ -54,6 +63,11 @@ while running:
 
     # Load current player sprite
     player_1.load_player(display)
+
+    # Load enemie
+    for enemy in enemies:
+        enemy.update(display)
+        enemy.load_enemie(display)
 
     # update window
     pygame.display.flip()
