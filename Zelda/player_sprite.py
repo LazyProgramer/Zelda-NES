@@ -1,8 +1,9 @@
 import pygame
+from constants import MYDIR
 
 class PlayerSprite:
     def __init__(self):
-        self.sprites = pygame.image.load("Zelda/Sprites/Link.png")
+        self.sprites = pygame.image.load(MYDIR+"/Sprites/Link.png")
         self.walkUpArray = {}
         self.walkLeftArray = {}
         self.walkRightArray = {}
@@ -50,3 +51,15 @@ class PlayerSprite:
         upRightLegSprite.set_colorkey((116,116,116))
 
         self.walkUpArray = [upLeftLegSprite, upRightLegSprite]
+
+
+    def update(self, display, location, direction):
+        #print(direction)
+        if direction == (0,1):
+            display.blit(self.walkDownArray[0], (location[0], location[1], 15*3,15*3))
+        elif direction == (1,0):
+            display.blit(self.walkRightArray[0], (location[0], location[1], 15*3,15*3))
+        elif direction == (-1,0):
+            display.blit(self.walkLeftArray[0], (location[0], location[1], 15*3,15*3))
+        elif direction == (0,-1):
+            display.blit(self.walkUpArray[0], (location[0], location[1], 15*3,15*3))

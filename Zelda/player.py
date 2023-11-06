@@ -12,8 +12,14 @@ class Player:
 
         self.display = display
         self.hitbox = (15,15)
-        self.direction = (0,1)
-        self.playerSprite = PlayerSprite
+        self._direction = (0,1)
+        self.playerSprite = PlayerSprite()
+
+    def get_direction(self):
+        return self._direction
+
+    def set_direction(self, direction):
+        self._direction = direction
 
     # Verify is next position is possible then move
     def player_move(self, x, y):
@@ -41,7 +47,7 @@ class Player:
         if self.check_next_position(x, y):
             # Move to next position
             self.location = (self.location[0] + x*PLAYER_SPEED, self.location[1] + y*PLAYER_SPEED)
-         
+            self.set_direction((x,y))
         return (0,0)
 
     # Check if player is gonna collide with a wall/water
@@ -78,7 +84,7 @@ class Player:
         player_sprite.set_colorkey((116,116,116))
         display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3))  
         
-    def update(self):
-        pass
+    def update(self, display):
+        self.playerSprite.update(display, self.location, self.get_direction())
         # display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3))
         

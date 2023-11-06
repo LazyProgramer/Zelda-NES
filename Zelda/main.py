@@ -1,6 +1,7 @@
 import pygame
 
 import input_handler
+from state_machine import *
 
 from commandpad import COMMAND_ARROWS
 from player import Player
@@ -14,9 +15,23 @@ clock = pygame.time.Clock()
 
 input_handler = input_handler.InputHandler(COMMAND_ARROWS)
 
+idle = Idle()
+walk = Walk()
+
+states = [walk, idle]
+transitions = {
+    "idle": Transition(walk, idle),
+    "walk": Transition(idle, walk)
+}
+
+fsm = FSM(states, transitions)
+
 player_1 = Player(display)
+player_1.load_sprites()
 display_loader = Display_loader()
 pressed_keys = []
+
+state_event = None
 
 running = True 
 
@@ -43,7 +58,10 @@ while running:
     if pressed_keys:
         command = input_handler.handleInput(pressed_keys[-1])
         move_map = command().execute(player_1)
+        state_event = "walk"
         display_loader.update_map(move_map)
+    else:
+        state_event = "idle"
 
     # Make background black
     display.fill(BACKGROUND)
@@ -54,6 +72,8 @@ while running:
 
     # Load current player sprite
     player_1.load_player(display)
+    
+    fsm.update(state_event, display, player_1)
 
     # update window
     pygame.display.flip()
