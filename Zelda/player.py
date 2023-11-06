@@ -1,5 +1,7 @@
 from tkinter import SEL
 import pygame
+from player_sprite import *
+
 
 from constants import WIDTH, HEIGHT, HUD_HEIGHT,SCALE, PLAYER_SPEED, PLAYER_SIZE, PLAYER_HITBOX, MYDIR
 
@@ -10,6 +12,8 @@ class Player:
 
         self.display = display
         self.hitbox = (15,15)
+        self.direction = (0,1)
+        self.playerSprite = PlayerSprite
 
     # Verify is next position is possible then move
     def player_move(self, x, y):
@@ -58,7 +62,15 @@ class Player:
             
         return True
 
-    # Load player sprite
+    def load_sprites(self):
+        self.playerSprite.load_sprites()
+
+        """player_sprite = pygame.Surface((15,15)).convert_alpha()
+        player_sprite.blit(self.sprites, (0,0), (69,11,15,15))
+        player_sprite = pygame.transform.scale(player_sprite, (15*3,15*3))
+        player_sprite.set_colorkey((116,116,116))
+        display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3))"""
+
     def load_player(self, display):
         player_sprite = pygame.Surface((15,15)).convert_alpha()
         player_sprite.blit(self.sprites, (0,0), (69,11,15,15))
@@ -68,3 +80,5 @@ class Player:
         
     def update(self):
         pass
+        # display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3))
+        
