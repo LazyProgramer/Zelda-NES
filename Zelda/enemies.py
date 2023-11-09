@@ -1,6 +1,6 @@
 import pygame
 import random
-from constants import WIDTH, HEIGHT, SCALE, MYDIR, OCTOROC_SIZE, OCTOROC_SPEED, OCTOROC_HITBOX
+from constants import WIDTH, HEIGHT, SCALE, MYDIR, OCTOROC_SIZE, OCTOROC_SPEED, OCTOROC_HITBOX, SET_COLOR
 
 class Enemy:
     def __init__(self):
@@ -15,25 +15,45 @@ class Enemy:
 # -----------------------------------------------------------
 
 class Octoroc:
-    def __init__(self, location = (WIDTH*SCALE/3,HEIGHT*SCALE/2)):
+    def __init__(self, display, observer, location = (WIDTH*SCALE/3,HEIGHT*SCALE/2)):
         self.location = location
         self.health = 3
 
         self.change_direction = 0
         self.current_direction = (1, 0)
         self.directions = [(0, -1),(0, 1),(-1, 0),(1, 0)]
+        
+        self.display = display
+        self.observer = observer
 
-    def update(self, display):
+        self.hitbox = []
+
+    def update(self):
+        # if damaged():
+        #     pass
+
+        # Change direction, bigger chance to change the more he keeps moving in the same direction
         if self.change_direction > random.random():
-            self.change_direction = 0
+            self.change_direction = -0.05
             self.current_direction = random.choice(self.directions)
 
-        if self.check_next_position(self.current_direction[0], self.current_direction[1], display):
+        # Verify if next position is in bounds and incricese chance to change direction
+        if self.check_next_position(self.current_direction[0], self.current_direction[1]):
             # Move to next position
             self.location = (self.location[0] + self.current_direction[0]*OCTOROC_SPEED, self.location[1] + self.current_direction[1]*OCTOROC_SPEED)
             self.change_direction += 0.05
 
-    def check_next_position(self, x, y, display):
+        self.hitbox = (self.location[0], self.location[1],self.location[0]+OCTOROC_HITBOX, self.location[1]+OCTOROC_HITBOX)
+
+        # # Check hitbox
+        # pygame.draw.rect(self.display, "black", (self.hitbox[0], self.hitbox[1], 3, 3))
+        # pygame.draw.rect(self.display, "black", (self.hitbox[2], self.hitbox[3], 3, 3))
+
+        # Give observer current position
+        self.observer.update_enemy(self.hitbox)
+        # print(self.observer.overlap(self.hitbox))
+
+    def check_next_position(self, x, y):
         l = ((x + y)+1)/2
         m = 1
         n = 0
@@ -44,19 +64,22 @@ class Octoroc:
 
         # Funny calculation to have 1 if statement instead of 8
         for i in range(int(self.location[n]), int(self.location[n]+OCTOROC_HITBOX)):
-            if display.get_at(((int((self.location[m]+x)*n + i*m + OCTOROC_HITBOX*l*n)),
+            if self.display.get_at(((int((self.location[m]+x)*n + i*m + OCTOROC_HITBOX*l*n)),
                                (int((self.location[m]+y)*m + i*n + OCTOROC_HITBOX*l*m))))[:3] != (252, 216, 168):
                 self.change_direction = 1
                 return False
             
         return True
     
-    def load_enemie(self, display):
-        enemie_sprite = pygame.Surface((16,16)).convert_alpha()
-        enemie_sprite.blit(Enemy().get_sprites(), (0,0), (1,11,16,16))
-        enemie_sprite = pygame.transform.scale(enemie_sprite, (16*3,16*3))
-        enemie_sprite.set_colorkey((116,116,116))
-        display.blit(enemie_sprite, (self.location[0], self.location[1], 16*3,16*3))  
+    def damaged(self):
+        pass    
+
+    def load_enemie(self):
+        enemie_sprite = pygame.Surface((OCTOROC_SIZE,OCTOROC_SIZE)).convert_alpha()
+        enemie_sprite.blit(Enemy().get_sprites(), (0,0), (1,11,OCTOROC_SIZE,OCTOROC_SIZE))
+        enemie_sprite = pygame.transform.scale(enemie_sprite, (OCTOROC_SIZE*SCALE,OCTOROC_SIZE*SCALE))
+        enemie_sprite.set_colorkey(SET_COLOR)
+        self.display.blit(enemie_sprite, (self.location[0], self.location[1], OCTOROC_SIZE*SCALE,OCTOROC_SIZE*SCALE))  
 
     # Not sure if better then pure random after 10 moves
     # def change_direction(self):

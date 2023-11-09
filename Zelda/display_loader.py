@@ -1,5 +1,5 @@
 import pygame
-from constants import WIDTH,MAP_HEIGHT,HUD_HEIGHT,SCALE,MYDIR
+from constants import WIDTH,MAP_HEIGHT,HUD_HEIGHT,SCALE,MYDIR,BACKGROUND,GREEN
 
 """
 missing_area = (WIDTH,24)
@@ -27,12 +27,19 @@ class Display_loader:
         map_surface = pygame.Surface((WIDTH,MAP_HEIGHT)).convert_alpha()
         map_surface.blit(self.game_map, (0,0), (map_x,map_y,WIDTH,MAP_HEIGHT))
         current_map = pygame.transform.scale(map_surface, (WIDTH*SCALE,MAP_HEIGHT*SCALE))
-        current_map.set_colorkey((0,128,0))
+        current_map.set_colorkey(GREEN)
         display.blit(current_map, (0, HUD_HEIGHT*SCALE, WIDTH*SCALE,MAP_HEIGHT*SCALE)) 
 
     def load_hud(self, display):
         load_hud = pygame.Surface((WIDTH,HUD_HEIGHT)).convert_alpha()
         load_hud.blit(self.hubs, (0,0), (258,11,WIDTH,HUD_HEIGHT))
         hud = pygame.transform.scale(load_hud, (WIDTH*SCALE,HUD_HEIGHT*SCALE))
-        hud.set_colorkey((0,128,0))   
+        hud.set_colorkey(GREEN)   
         display.blit(hud, (0, 0, WIDTH*SCALE,HUD_HEIGHT*SCALE))
+
+    def load_hearths(self, display):
+        for x in range(16):
+            load_heath = pygame.Surface((8,8)).convert_alpha()
+            load_heath.blit(self.hubs, (0,0), (645,117,8,8))
+            load_heath = pygame.transform.scale(load_heath, (8*SCALE,8*SCALE))
+            display.blit(load_heath, ((434-258+8*(x%8))*SCALE,(43-11+(x//8)*8)*SCALE, 8*SCALE,8*SCALE))

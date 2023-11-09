@@ -5,6 +5,8 @@ import input_handler
 from commandpad import COMMAND_ARROWS
 from constants import WIDTH, HEIGHT, SCALE, BACKGROUND
 
+from observer import Obeserver
+
 from player import Player
 from display_loader import Display_loader
 from enemies import Octoroc
@@ -16,7 +18,8 @@ clock = pygame.time.Clock()
 
 input_handler = input_handler.InputHandler(COMMAND_ARROWS)
 
-player_1 = Player(display)
+observer = Obeserver()
+player_1 = Player(display, observer)
 display_loader = Display_loader()
 pressed_keys = []
 
@@ -27,7 +30,7 @@ pressed_keys = []
 # octoroc_5 = Octoroc((WIDTH*SCALE-WIDTH*SCALE/3,HEIGHT*SCALE-HEIGHT*SCALE/3))
 # enemies = [octoroc_1,octoroc_2,octoroc_3,octoroc_4,octoroc_5]
 
-octoroc = Octoroc((WIDTH*SCALE/3,HEIGHT*SCALE/3))
+octoroc = Octoroc(display, observer, (WIDTH*SCALE/3,HEIGHT*SCALE/3))
 enemies = [octoroc]
 
 running = True 
@@ -63,15 +66,18 @@ while running:
     # Load current map and hub
     display_loader.load_map(display)
     display_loader.load_hud(display)
+    display_loader.load_hearths(display)
 
     # Load current player sprite
-    player_1.load_player(display)
+    player_1.load_player()
 
-    # Load enemie
+    # Load enemies
     for enemy in enemies:
-        enemy.update(display)
-        enemy.load_enemie(display)
+        enemy.update()
+        enemy.load_enemie()
 
+    # print(observer.notify())
+    
     # update window
     pygame.display.flip()
     clock.tick(15)
