@@ -3,14 +3,17 @@ import pygame
 from player_sprite import *
 
 
-from constants import WIDTH, HEIGHT, HUD_HEIGHT,SCALE, PLAYER_SPEED, PLAYER_SIZE, PLAYER_HITBOX, MYDIR, SWORD_HITBOX, SET_COLOR
+from constants import WIDTH, HEIGHT, HUD_HEIGHT,SCALE, PLAYER_SPEED, PLAYER_SIZE, PLAYER_HITBOX, MYDIR, SWORD_HITBOX, SET_COLOR, HEATH_SIZE
 
 class Player:
     def __init__(self, display, observer):
         self.sprites = pygame.image.load(MYDIR+"/Sprites/Link.png")
+        self.hearths = pygame.image.load(MYDIR+"/Sprites/HUD.png").convert()
+
         self.location = (WIDTH*SCALE/2,HEIGHT*SCALE/2)
 
-        self.health = 3
+        self.max_health = 16
+        self.health = 16
 
         self.display = display
         self.observer = observer
@@ -48,7 +51,7 @@ class Player:
         if self.check_next_position(x, y):
             # Move to next position
             self.location = (self.location[0] + x*PLAYER_SPEED, self.location[1] + y*PLAYER_SPEED)
-         
+
         return (0,0)
 
     # Check if player is gonna collide with a wall/water
@@ -166,6 +169,39 @@ class Player:
 
         # Give observer current hitboxes
         self.observer.update_player(self.player_hitbox, self.sword_hitbox)
+
+    def load_hearths(self):
+        # for x in range(int(self.health)):
+        #     load_heath = pygame.Surface((HEATH_SIZE,HEATH_SIZE)).convert_alpha()
+        #     load_heath.blit(self.hearths, (0,0), (645,117,HEATH_SIZE,HEATH_SIZE))
+        #     load_heath = pygame.transform.scale(load_heath, (HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
+        #     self.display.blit(load_heath, ((176+8*(x%8))*SCALE,(32+8*(x//8))*SCALE, HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
+
+        # for x in range(int(self.health), self.max_health):
+        #     load_heath = pygame.Surface((HEATH_SIZE,HEATH_SIZE)).convert_alpha()
+        #     load_heath.blit(self.hearths, (0,0), (627,117,HEATH_SIZE,HEATH_SIZE))
+        #     load_heath = pygame.transform.scale(load_heath, (HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
+        #     self.display.blit(load_heath, ((176+8*(x%8))*SCALE,(32+8*(x//8))*SCALE, HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
+        
+        # if int(self.health) - self.health < 0:
+        #     x = int(self.health)
+        #     load_heath = pygame.Surface((HEATH_SIZE,HEATH_SIZE)).convert_alpha()
+        #     load_heath.blit(self.hearths, (0,0), (636,117,HEATH_SIZE,HEATH_SIZE))
+        #     load_heath = pygame.transform.scale(load_heath, (HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
+        #     self.display.blit(load_heath, ((176+8*(x%8))*SCALE,(32+8*(x//8))*SCALE, HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
+
+        for x in range(self.max_health):
+            load_heath = pygame.Surface((HEATH_SIZE,HEATH_SIZE)).convert_alpha()
+            
+            if self.health > x:
+                load_heath.blit(self.hearths, (0,0), (645,117,HEATH_SIZE,HEATH_SIZE))
+            if self.health - x == 0.5:
+                load_heath.blit(self.hearths, (0,0), (636,117,HEATH_SIZE,HEATH_SIZE))
+            if self.health <= x:
+                load_heath.blit(self.hearths, (0,0), (627,117,HEATH_SIZE,HEATH_SIZE))
+
+            load_heath = pygame.transform.scale(load_heath, (HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
+            self.display.blit(load_heath, ((176+8*(x%8))*SCALE,(32+8*(x//8))*SCALE, HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
 
     def update(self):
         pass

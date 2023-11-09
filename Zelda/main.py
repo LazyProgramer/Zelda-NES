@@ -66,10 +66,10 @@ while running:
     # Load current map and hub
     display_loader.load_map(display)
     display_loader.load_hud(display)
-    display_loader.load_hearths(display)
 
     # Load current player sprite
     player_1.load_player()
+    player_1.load_hearths()
 
     # Load enemies
     for enemy in enemies:

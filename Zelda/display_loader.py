@@ -42,4 +42,4 @@ class Display_loader:
             load_heath = pygame.Surface((8,8)).convert_alpha()
             load_heath.blit(self.hubs, (0,0), (645,117,8,8))
             load_heath = pygame.transform.scale(load_heath, (8*SCALE,8*SCALE))
-            display.blit(load_heath, ((434-258+8*(x%8))*SCALE,(43-11+(x//8)*8)*SCALE, 8*SCALE,8*SCALE))
+            display.blit(load_heath, ((434-258+8*(x%8))*SCALE,(43-11+8*(x//8))*SCALE, 8*SCALE,8*SCALE))
