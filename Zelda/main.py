@@ -4,9 +4,13 @@ import input_handler
 from state_machine import *
 
 from commandpad import COMMAND_ARROWS
+from constants import WIDTH, HEIGHT, SCALE, BACKGROUND
+
+from observer import Obeserver
+
 from player import Player
 from display_loader import Display_loader
-from constants import WIDTH, HEIGHT, SCALE, BACKGROUND
+from enemies import Octoroc
 
 GAME_EVENT = pygame.event.custom_type()
 
@@ -14,6 +18,21 @@ display = pygame.display.set_mode((SCALE * WIDTH, SCALE * HEIGHT))
 clock = pygame.time.Clock()
 
 input_handler = input_handler.InputHandler(COMMAND_ARROWS)
+
+observer = Obeserver()
+# player_1 = Player(display, observer)
+display_loader = Display_loader()
+pressed_keys = []
+
+# octoroc_1 = Octoroc((WIDTH*SCALE/3,HEIGHT*SCALE/2))
+# octoroc_2 = Octoroc((WIDTH*SCALE/4,HEIGHT*SCALE/2))
+# octoroc_3 = Octoroc((WIDTH*SCALE/3,HEIGHT*SCALE/3))
+# octoroc_4 = Octoroc((WIDTH*SCALE-WIDTH*SCALE/4,HEIGHT*SCALE-HEIGHT*SCALE/2))
+# octoroc_5 = Octoroc((WIDTH*SCALE-WIDTH*SCALE/3,HEIGHT*SCALE-HEIGHT*SCALE/3))
+# enemies = [octoroc_1,octoroc_2,octoroc_3,octoroc_4,octoroc_5]
+
+octoroc = Octoroc(display, observer, (WIDTH*SCALE/3,HEIGHT*SCALE/3))
+enemies = [octoroc]
 
 idle = Idle()
 walk = Walk()
@@ -26,7 +45,7 @@ transitions = {
 
 fsm = FSM(states, transitions)
 
-player_1 = Player(display)
+player_1 = Player(display, observer)
 player_1.load_sprites()
 display_loader = Display_loader()
 pressed_keys = []
@@ -71,10 +90,18 @@ while running:
     display_loader.load_hud(display)
 
     # Load current player sprite
-    player_1.load_player(display)
+    player_1.load_player()
+    player_1.load_hearths()
     
-    fsm.update(state_event, display, player_1)
+    # fsm.update(state_event, display, player_1)
 
+    # Load enemies
+    for enemy in enemies:
+        enemy.update()
+        enemy.load_enemie()
+
+    # print(observer.notify())
+    
     # update window
     pygame.display.flip()
     clock.tick(15)
