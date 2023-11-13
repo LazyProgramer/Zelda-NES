@@ -1,7 +1,6 @@
 import pygame
 
 import input_handler
-from state_machine import *
 
 from commandpad import COMMAND_ARROWS
 from constants import WIDTH, HEIGHT, SCALE, BACKGROUND
@@ -23,6 +22,7 @@ observer = Obeserver()
 # player_1 = Player(display, observer)
 display_loader = Display_loader()
 pressed_keys = []
+array = {} # will contain move_map and new state
 
 # octoroc_1 = Octoroc((WIDTH*SCALE/3,HEIGHT*SCALE/2))
 # octoroc_2 = Octoroc((WIDTH*SCALE/4,HEIGHT*SCALE/2))
@@ -34,16 +34,30 @@ pressed_keys = []
 octoroc = Octoroc(display, observer, (WIDTH*SCALE/3,HEIGHT*SCALE/3))
 enemies = [octoroc]
 
-idle = Idle()
-walk = Walk()
+current_event = "walkIdle"
 
-states = [walk, idle]
-transitions = {
-    "idle": Transition(walk, idle),
-    "walk": Transition(idle, walk)
+"""idle = Idle()
+walk = Walk()
+attack = Fight()
+damaged = Damaged()
+
+states = [walk, idle, attack, damaged]
+transitions = {    
+    "idleWalk": Transition(idle, walk),
+    "idleAttack": Transition(idle, attack),    
+    "idleDamaged": Transition(idle, damaged),
+    "walkIdle": Transition(walk, idle),
+    "walkAttack": Transition(walk, attack),
+    "walkDamaged": Transition(walk, damaged),
+    "attackIdle": Transition(attack, idle),
+    "attackWalk": Transition(attack, walk),
+    "attackDamaged": Transition(attack, damaged),
+    "damagedIdle": Transition(damaged, idle),
+    "damagedWalk": Transition(damaged, walk),
+    "damagedAttack": Transition(damaged, attack)
 }
 
-fsm = FSM(states, transitions)
+fsm = FSM(states, transitions)"""
 
 player_1 = Player(display, observer)
 player_1.load_sprites()
@@ -76,11 +90,11 @@ while running:
         # command = input_handler.handleInput(key)
     if pressed_keys:
         command = input_handler.handleInput(pressed_keys[-1])
-        move_map = command().execute(player_1)
-        state_event = "walk"
+        array = command().execute(player_1, current_event)
+        move_map = array[0]
+        current_event = array[1]
+        print(current_event)
         display_loader.update_map(move_map)
-    else:
-        state_event = "idle"
 
     # Make background black
     display.fill(BACKGROUND)
@@ -92,8 +106,8 @@ while running:
     # Load current player sprite
     player_1.load_player()
     player_1.load_hearths()
-    
-    # fsm.update(state_event, display, player_1)
+    player_1.stateMachine(current_event, display)
+    #fsm.update(current_event, display, player_1)
 
     # Load enemies
     for enemy in enemies:

@@ -1,6 +1,7 @@
 from tkinter import SEL
 import pygame
 from player_sprite import *
+from state_machine import *
 
 
 from constants import WIDTH, HEIGHT, HUD_HEIGHT,SCALE, PLAYER_SPEED, PLAYER_SIZE, PLAYER_HITBOX, MYDIR, SWORD_HITBOX, SET_COLOR, HEATH_SIZE
@@ -22,6 +23,41 @@ class Player:
         self.playerSprite = PlayerSprite()
 
         self.status = 0
+        
+        self.idle = Idle()
+        self.walk = Walk()
+        self.fight = Fight()
+        self.damaged = Damaged()
+
+        self.states = [self.walk, self.idle, self.fight, self.damaged]
+        self.transitions = {    
+            "idleWalk": Transition(self.idle, self.walk),
+            "idleAttack": Transition(self.idle, self.fight),    
+            "idleDamaged": Transition(self.idle, self.damaged),
+            "walkIdle": Transition(self.walk, self.idle),
+            "walkAttack": Transition(self.walk, self.fight),
+            "walkDamaged": Transition(self.walk, self.damaged),
+            "attackIdle": Transition(self.fight, self.idle),
+            "attackWalk": Transition(self.fight, self.walk),
+            "attackDamaged": Transition(self.fight, self.damaged),
+            "damagedIdle": Transition(self.damaged, self.idle),
+            "damagedWalk": Transition(self.damaged, self.walk),
+            "damagedAttack": Transition(self.damaged, self.fight)
+        }
+
+        self.fsm = FSM(self.states, self.transitions)
+
+        self.left = LeftLeg()
+        self.right = RightLeg()
+
+        self.spriteStates = [self.left, self.right]
+
+        self.spriteTransitions = {
+            "leftRight": Transition(self.left, self.right),
+            "rightLeft": Transition(self.right, self.left)
+        }
+
+        self.spriteFSM = FSM(self.spriteStates, self.spriteTransitions)
 
     def get_direction(self):
         return self._direction
@@ -86,27 +122,21 @@ class Player:
     def load_sprites(self):
         self.playerSprite.load_sprites()
 
-        """player_sprite = pygame.Surface((15,15)).convert_alpha()
-        player_sprite.blit(self.sprites, (0,0), (69,11,15,15))
-        player_sprite = pygame.transform.scale(player_sprite, (15*3,15*3))
-        player_sprite.set_colorkey((116,116,116))
-        display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3))"""
-
     def load_player(self):
-        player_sprite = pygame.Surface((PLAYER_SIZE,PLAYER_SIZE)).convert_alpha()
         if self.status == 0:
 
-            # Get player sprite
-            player_sprite.blit(self.sprites, (0,0), (35 - 34 * self._direction[1],11,PLAYER_SIZE,PLAYER_SIZE))
-            player_sprite = pygame.transform.scale(player_sprite, (PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
+            # # Get player sprite
+            # player_sprite.blit(self.sprites, (0,0), (35 - 34 * self._direction[1],11,PLAYER_SIZE,PLAYER_SIZE))
+            # player_sprite = pygame.transform.scale(player_sprite, (PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
 
-            if self._direction[0] < 0:
-                player_sprite = pygame.transform.flip(player_sprite, True, False)
+            # if self._direction[0] < 0:
+            #     player_sprite = pygame.transform.flip(player_sprite, True, False)
 
             self.sword_hitbox = (0,0,0,0)
 
         # Attack
         else:
+            player_sprite = pygame.Surface((PLAYER_SIZE,PLAYER_SIZE)).convert_alpha()
             self.status = 0
 
             # Get sword sprite size
@@ -165,8 +195,8 @@ class Player:
                                          self.location[0]+5*3+5*3, self.location[1]+PLAYER_HITBOX-12+15*3)
 
         # Load player after sword, so sword is placed behind player
-        player_sprite.set_colorkey(SET_COLOR)
-        self.display.blit(player_sprite, (self.location[0], self.location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))  
+            player_sprite.set_colorkey(SET_COLOR)
+            self.display.blit(player_sprite, (self.location[0], self.location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))  
 
         self.player_hitbox = (self.location[0], self.location[1],
                               self.location[0]+PLAYER_HITBOX, self.location[1]+PLAYER_HITBOX)
@@ -198,9 +228,8 @@ class Player:
     def update(self):
         pass
 
-    def update(self, display):
-        self.playerSprite.update(display, self.location, self.get_direction())
-        # display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3))
+    def update(self, display, current_event):
+        self.playerSprite.update(display, self.location, self.get_direction(), current_event)
         
     def attack(self): 
         self.status = 1
@@ -217,3 +246,6 @@ class Player:
         # player_sprite.set_colorkey((116,116,116))
         # self.display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3)) 
         return (0,0)
+    
+    def stateMachine(self, current_event, display):
+        self.fsm.update(current_event, display, self)
