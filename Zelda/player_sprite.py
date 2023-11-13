@@ -3,10 +3,10 @@ import pygame
 class PlayerSprite:
     def __init__(self):
         self.sprites = pygame.image.load("Zelda/Sprites/Link.png")
-        self.walkUpArray = {}
-        self.walkLeftArray = {}
-        self.walkRightArray = {}
-        self.walkDownArray = {}
+        self.walkUpArray = None
+        self.walkLeftArray = None
+        self.walkRightArray = None
+        self.walkDownArray = None
 
     def load_sprites(self):
         #display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3))

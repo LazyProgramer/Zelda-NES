@@ -52,6 +52,8 @@ class Player:
             # Move to next position
             self.location = (self.location[0] + x*PLAYER_SPEED, self.location[1] + y*PLAYER_SPEED)
 
+        self.health -= 0.5
+
         return (0,0)
 
     # Check if player is gonna collide with a wall/water
@@ -171,25 +173,6 @@ class Player:
         self.observer.update_player(self.player_hitbox, self.sword_hitbox)
 
     def load_hearths(self):
-        # for x in range(int(self.health)):
-        #     load_heath = pygame.Surface((HEATH_SIZE,HEATH_SIZE)).convert_alpha()
-        #     load_heath.blit(self.hearths, (0,0), (645,117,HEATH_SIZE,HEATH_SIZE))
-        #     load_heath = pygame.transform.scale(load_heath, (HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
-        #     self.display.blit(load_heath, ((176+8*(x%8))*SCALE,(32+8*(x//8))*SCALE, HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
-
-        # for x in range(int(self.health), self.max_health):
-        #     load_heath = pygame.Surface((HEATH_SIZE,HEATH_SIZE)).convert_alpha()
-        #     load_heath.blit(self.hearths, (0,0), (627,117,HEATH_SIZE,HEATH_SIZE))
-        #     load_heath = pygame.transform.scale(load_heath, (HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
-        #     self.display.blit(load_heath, ((176+8*(x%8))*SCALE,(32+8*(x//8))*SCALE, HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
-        
-        # if int(self.health) - self.health < 0:
-        #     x = int(self.health)
-        #     load_heath = pygame.Surface((HEATH_SIZE,HEATH_SIZE)).convert_alpha()
-        #     load_heath.blit(self.hearths, (0,0), (636,117,HEATH_SIZE,HEATH_SIZE))
-        #     load_heath = pygame.transform.scale(load_heath, (HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
-        #     self.display.blit(load_heath, ((176+8*(x%8))*SCALE,(32+8*(x//8))*SCALE, HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
-
         for x in range(self.max_health):
             load_heath = pygame.Surface((HEATH_SIZE,HEATH_SIZE)).convert_alpha()
             
