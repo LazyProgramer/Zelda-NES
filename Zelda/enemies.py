@@ -81,14 +81,14 @@ class Octoroc:
         enemie_sprite.set_colorkey(SET_COLOR)
         self.display.blit(enemie_sprite, (self.location[0], self.location[1], OCTOROC_SIZE*SCALE,OCTOROC_SIZE*SCALE))  
 
-        # Get player sprite
-        enemie_sprite.blit(Enemy().get_sprites(), (0,0), (35 - 34 * self.current_direction[1],11,OCTOROC_SIZE,OCTOROC_SIZE))
-        enemie_sprite = pygame.transform.scale(enemie_sprite, (OCTOROC_SIZE*SCALE,OCTOROC_SIZE*SCALE))
+        # # Get player sprite
+        # enemie_sprite.blit(Enemy().get_sprites(), (0,0), (35 - 34 * self.current_direction[1],11,OCTOROC_SIZE,OCTOROC_SIZE))
+        # enemie_sprite = pygame.transform.scale(enemie_sprite, (OCTOROC_SIZE*SCALE,OCTOROC_SIZE*SCALE))
 
-        if self.direction[0] < 0:
-            enemie_sprite = pygame.transform.flip(enemie_sprite, True, False)
-        elif self.direction[1] > 0:
-            enemie_sprite = pygame.transform.flip(enemie_sprite, False, True)
+        # if self.current_direction[0] < 0:
+        #     enemie_sprite = pygame.transform.flip(enemie_sprite, True, False)
+        # elif self.current_direction[1] > 0:
+        #     enemie_sprite = pygame.transform.flip(enemie_sprite, False, True)
 # 1 11
 # 35 11
 
