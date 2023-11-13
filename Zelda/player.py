@@ -23,7 +23,7 @@ class Player:
 
         self.status = 0
 
-        self.invulnerability_frames = 5
+        self.invulnerability_frames = 15*15
         self.took_damaged = 0
 
     def get_direction(self):
@@ -96,20 +96,20 @@ class Player:
         display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3))"""
 
     def load_player(self):
-        player_sprite = pygame.Surface((PLAYER_SIZE,PLAYER_SIZE)).convert_alpha()
         if self.status == 0:
 
-            # Get player sprite
-            player_sprite.blit(self.sprites, (0,0), (35 - 34 * self._direction[1],11,PLAYER_SIZE,PLAYER_SIZE))
-            player_sprite = pygame.transform.scale(player_sprite, (PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
+            # # Get player sprite
+            # player_sprite.blit(self.sprites, (0,0), (35 - 34 * self._direction[1],11,PLAYER_SIZE,PLAYER_SIZE))
+            # player_sprite = pygame.transform.scale(player_sprite, (PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
 
-            if self._direction[0] < 0:
-                player_sprite = pygame.transform.flip(player_sprite, True, False)
+            # if self._direction[0] < 0:
+            #     player_sprite = pygame.transform.flip(player_sprite, True, False)
 
             self.sword_hitbox = (0,0,0,0)
 
         # Attack
         else:
+            player_sprite = pygame.Surface((PLAYER_SIZE,PLAYER_SIZE)).convert_alpha()
             self.status = 0
 
             # Get sword sprite size
@@ -168,8 +168,8 @@ class Player:
                                          self.location[0]+5*3+5*3, self.location[1]+PLAYER_HITBOX-12+15*3)
 
         # Load player after sword, so sword is placed behind player
-        player_sprite.set_colorkey(SET_COLOR)
-        self.display.blit(player_sprite, (self.location[0], self.location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))  
+            player_sprite.set_colorkey(SET_COLOR)
+            self.display.blit(player_sprite, (self.location[0], self.location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))  
 
         self.player_hitbox = (self.location[0], self.location[1],
                               self.location[0]+PLAYER_HITBOX, self.location[1]+PLAYER_HITBOX)
@@ -204,15 +204,14 @@ class Player:
             self.took_damaged = 1
             self.health -= 0.5
             self.invulnerability_frames = 5
-        else:
-            self.invulnerability_frames -= 1
 
-    def update(self, display):
+    def update(self):
         if self.took_damaged == 1 and self.invulnerability_frames <= 0:
             self.took_damaged = 0
-            return
+        else:
+            self.invulnerability_frames -= 1
         
-        self.playerSprite.update(display, self.location, self.get_direction())
+        self.playerSprite.update(self.display, self.location, self.get_direction())
         # display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3))
         
     def attack(self): 

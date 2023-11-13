@@ -7,8 +7,8 @@ class State:
     def enter(self):
         print("Entering {self.name}")
 
-    def update(self, display, object):
-        object.update(display)
+    def update(self, object):
+        object.update()
 
     def exit(self):
         print("Leaving {self.name}")
@@ -23,17 +23,17 @@ class Idle(State):
     def __init__(self) -> None:
         super().__init__(self.__class__.__name__)
 
-    def update(self, display, object):
+    def update(self, object):
         print("waiting for your command...")
-        return super().update(display, object)
+        return super().update(object)
     
 class Walk(State):
     def __init__(self) -> None:
         super().__init__(self.__class__.__name__)
 
-    def update(self, display, object):
+    def update(self, object):
         print("Moving")
-        return super().update(display, object)
+        return super().update(object)
     
 
 class FSM:
@@ -44,14 +44,14 @@ class FSM:
         self.current_state: State = self._states[0]
         self.end: State = self._states[-1]
 
-    def update(self, event, display, object):
+    def update(self, event, object):
         if event:
             trans = self._transitions.get(event)
             if trans and trans._from == self.current_state:
                 self.current_state.exit()
                 self.current_state = trans._to
                 self.current_state.enter()
-        self.current_state.update(display, object)
+        self.current_state.update(object)
 
         if self.current_state == self.end:
             self.current_state.exit()

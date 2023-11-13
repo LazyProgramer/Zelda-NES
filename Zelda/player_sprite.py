@@ -6,6 +6,9 @@ class PlayerSprite:
         self.sprites = pygame.image.load(MYDIR + "/Sprites/Link.png")
         self.walk_frames = []
 
+        self.f = 0
+        self.tick = 0
+
         # self.walkUpArray = None
         # self.walkLeftArray = None
         # self.walkRightArray = None
@@ -19,7 +22,6 @@ class PlayerSprite:
             if x < 6:
                 walk_frame = pygame.Surface((PLAYER_SIZE,PLAYER_SIZE)).convert_alpha()
 
-                print(1 - 17 * x)
                 walk_frame.blit(self.sprites, (0,0), (1 + 17 * x,11,PLAYER_SIZE,PLAYER_SIZE))
 
                 walk_frame = pygame.transform.scale(walk_frame, (PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
@@ -75,18 +77,21 @@ class PlayerSprite:
 
         # self.walkUpArray = [upLeftLegSprite, upRightLegSprite]
 
-
     def update(self, display, location, direction):
         #print(direction)
+        self.tick += 1
+        if self.tick >= 6:
+            self.f += 1
+            self.tick = 0
         # Down
         if direction == (0,1): 
-            display.blit(self.walk_frames[0], (location[0], location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
+            display.blit(self.walk_frames[0 + self.f%2], (location[0], location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
         # Right
         elif direction == (1,0):
-            display.blit(self.walk_frames[2], (location[0], location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
+            display.blit(self.walk_frames[2 + self.f%2], (location[0], location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
         # Up
         elif direction == (0,-1):
-            display.blit(self.walk_frames[4], (location[0], location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
+            display.blit(self.walk_frames[4 + self.f%2], (location[0], location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
         # Left
         elif direction == (-1,0):
-            display.blit(self.walk_frames[6], (location[0], location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
+            display.blit(self.walk_frames[6 + self.f%2], (location[0], location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))

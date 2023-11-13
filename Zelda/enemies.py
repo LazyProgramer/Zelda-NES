@@ -28,15 +28,16 @@ class Octoroc:
 
         # 0: moving | 1: attacked
         self.state = 0
-        self.invulnerability_frames = 5
+        self.invulnerability_frames = 15*15
 
         self.hitbox = []
 
     def update(self):
         if self.state == 1 and self.invulnerability_frames <= 0:
             self.state = 0
-            
             return
+        else:
+            self.invulnerability_frames -= 1
 
         # Change direction, bigger chance to change the more he keeps moving in the same direction
         if self.change_direction > random.random():
@@ -82,8 +83,6 @@ class Octoroc:
             self.state = 1
             self.health -= 1
             self.invulnerability_frames = 5
-        else:
-            self.invulnerability_frames -= 1
 
     def load_enemie(self):
         enemie_sprite = pygame.Surface((OCTOROC_SIZE,OCTOROC_SIZE)).convert_alpha()

@@ -92,8 +92,9 @@ while running:
     # Load current player sprite
     player_1.load_player()
     player_1.load_hearths()
+    player_1.update()
     
-    fsm.update(state_event, display, player_1)
+    fsm.update(state_event, player_1)
 
     # Load enemies
     for enemy in enemies:
