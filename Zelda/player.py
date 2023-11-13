@@ -23,6 +23,9 @@ class Player:
 
         self.status = 0
 
+        self.invulnerability_frames = 5
+        self.took_damaged = 0
+
     def get_direction(self):
         return self._direction
 
@@ -35,7 +38,7 @@ class Player:
         self.status = 0
 
     # Verify is next position is possible then move
-    def player_move(self, x, y):
+    def player_move(self, x, y):        
         self._direction = (x, y)
         # Map update, updates map if player leaves playble area
         # PLAYER_SPEED is here or we can cause seizure
@@ -195,10 +198,20 @@ class Player:
             load_heath = pygame.transform.scale(load_heath, (HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
             self.display.blit(load_heath, ((176+8*(x%8))*SCALE,(32+8*(x//8))*SCALE, HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
 
-    def update(self):
-        pass
+    # Needs invulnerability frames
+    def damaged(self):
+        if self.took_damaged == 0:
+            self.took_damaged = 1
+            self.health -= 0.5
+            self.invulnerability_frames = 5
+        else:
+            self.invulnerability_frames -= 1
 
     def update(self, display):
+        if self.took_damaged == 1 and self.invulnerability_frames <= 0:
+            self.took_damaged = 0
+            return
+        
         self.playerSprite.update(display, self.location, self.get_direction())
         # display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3))
         

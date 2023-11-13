@@ -1,9 +1,9 @@
 import pygame
-from constants import MYDIR, PLAYER_SIZE, SCALE
+from constants import MYDIR, PLAYER_SIZE, SCALE, SET_COLOR
 
 class PlayerSprite:
     def __init__(self):
-        self.sprites = pygame.image.load("Zelda/Sprites/Link.png")
+        self.sprites = pygame.image.load(MYDIR + "/Sprites/Link.png")
         self.walk_frames = []
 
         # self.walkUpArray = None
@@ -19,7 +19,8 @@ class PlayerSprite:
             if x < 6:
                 walk_frame = pygame.Surface((PLAYER_SIZE,PLAYER_SIZE)).convert_alpha()
 
-                walk_frame.blit(self.sprites, (0,0), (1 - 17 * x,11,PLAYER_SIZE,PLAYER_SIZE))
+                print(1 - 17 * x)
+                walk_frame.blit(self.sprites, (0,0), (1 + 17 * x,11,PLAYER_SIZE,PLAYER_SIZE))
 
                 walk_frame = pygame.transform.scale(walk_frame, (PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
             else:
@@ -27,6 +28,8 @@ class PlayerSprite:
                 
                 walk_frame = pygame.transform.flip(walk_frame, True, False)
 
+
+            walk_frame.set_colorkey(SET_COLOR)
             self.walk_frames.append(walk_frame)
 
 

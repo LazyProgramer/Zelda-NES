@@ -11,13 +11,13 @@ class Obeserver:
     def update_enemy(self, enemy_hitbox):
         self.enemies_hitbox.append(enemy_hitbox)
 
-    def notify(self):
+    def notify(self, player, enemies):
         for enemy in self.enemies_hitbox:
-            # print(f'Player:{self.player_hitbox}\nSword:{self.sword_hitbox}\nEnemy:{enemy}')
+            
             if self.overlap(self.player_hitbox, enemy):
-                return "Player"
+                player.damaged()
             if self.overlap(self.sword_hitbox, enemy):
-                return "Enemy"
+                enemies[self.enemies_hitbox.index(enemy)].damaged()
         
         self.enemies_hitbox = []
         
