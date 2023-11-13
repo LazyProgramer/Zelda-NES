@@ -17,8 +17,17 @@ class Player:
 
         self.display = display
         self.observer = observer
-        self.direction = (0,1)
-        self.playerSprite = PlayerSprite
+        
+        self._direction = (0,1)
+        self.playerSprite = PlayerSprite()
+
+        self.status = 0
+
+    def get_direction(self):
+        return self._direction
+
+    def set_direction(self, direction):
+        self._direction = direction
 
         self.player_hitbox = None
         self.sword_hitbox = None
@@ -27,7 +36,7 @@ class Player:
 
     # Verify is next position is possible then move
     def player_move(self, x, y):
-        self.direction = (x, y)
+        self._direction = (x, y)
         # Map update, updates map if player leaves playble area
         # PLAYER_SPEED is here or we can cause seizure
         # Load map to the left
@@ -51,8 +60,8 @@ class Player:
         if self.check_next_position(x, y):
             # Move to next position
             self.location = (self.location[0] + x*PLAYER_SPEED, self.location[1] + y*PLAYER_SPEED)
-
-        self.health -= 0.5
+            
+            self.set_direction((x,y))
 
         return (0,0)
 
@@ -88,10 +97,10 @@ class Player:
         if self.status == 0:
 
             # Get player sprite
-            player_sprite.blit(self.sprites, (0,0), (35 - 34 * self.direction[1],11,PLAYER_SIZE,PLAYER_SIZE))
+            player_sprite.blit(self.sprites, (0,0), (35 - 34 * self._direction[1],11,PLAYER_SIZE,PLAYER_SIZE))
             player_sprite = pygame.transform.scale(player_sprite, (PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
 
-            if self.direction[0] < 0:
+            if self._direction[0] < 0:
                 player_sprite = pygame.transform.flip(player_sprite, True, False)
 
             self.sword_hitbox = (0,0,0,0)
@@ -101,32 +110,32 @@ class Player:
             self.status = 0
 
             # Get sword sprite size
-            if self.direction[0] == 0:                
+            if self._direction[0] == 0:                
                 sword_sprite_size = (7,15)
-            elif self.direction[1] == 0:
+            elif self._direction[1] == 0:
                 sword_sprite_size = (16,15)
 
             # Get sword sprite
             sword_sprite = pygame.Surface((sword_sprite_size[0],sword_sprite_size[1])).convert_alpha()
-            sword_sprite.blit(self.sprites, (0,0), (45-9*abs(self.direction[1]),154,sword_sprite_size[0],sword_sprite_size[1]))
+            sword_sprite.blit(self.sprites, (0,0), (45-9*abs(self._direction[1]),154,sword_sprite_size[0],sword_sprite_size[1]))
             sword_sprite = pygame.transform.scale(sword_sprite, (sword_sprite_size[0]*SCALE,sword_sprite_size[1]*SCALE))
 
             # Get player sprite
-            player_sprite.blit(self.sprites, (0,0), (124 - 17 * self.direction[1],11,PLAYER_SIZE,PLAYER_SIZE))
+            player_sprite.blit(self.sprites, (0,0), (124 - 17 * self._direction[1],11,PLAYER_SIZE,PLAYER_SIZE))
             player_sprite = pygame.transform.scale(player_sprite, (PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
 
             # Rotate sprite if needed
-            if self.direction[0] < 0:
+            if self._direction[0] < 0:
                 sword_sprite = pygame.transform.flip(sword_sprite, True, False)
                 player_sprite = pygame.transform.flip(player_sprite, True, False)
-            if self.direction[1] > 0:
+            if self._direction[1] > 0:
                 sword_sprite = pygame.transform.flip(sword_sprite, False, True)
 
             # Set color key to remove background grey
             sword_sprite.set_colorkey(SET_COLOR)
 
             # Specific sword coords to load sprite and define hitbox
-            match self.direction:
+            match self._direction:
                 case(-1,0):
                     self.display.blit(sword_sprite, (self.location[0]-PLAYER_HITBOX+12, self.location[1]+3, 
                                                      sword_sprite_size[0]*SCALE,sword_sprite_size[1]*SCALE))
@@ -188,6 +197,9 @@ class Player:
 
     def update(self):
         pass
+
+    def update(self, display):
+        self.playerSprite.update(display, self.location, self.get_direction())
         # display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3))
         
     def attack(self): 
