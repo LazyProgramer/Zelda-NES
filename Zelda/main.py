@@ -91,7 +91,7 @@ while running:
 
     # Load current player sprite
     player_1.load_player()
-    player_1.load_hearths()
+    player_1.load_hub()
     player_1.update()
     
     fsm.update(state_event, player_1)
@@ -102,7 +102,7 @@ while running:
             enemies.remove(enemy)
         else:
             enemy.update()
-            enemy.load_enemie()
+            # enemy.load_enemie()
 
     observer.notify(player_1, enemies)
     

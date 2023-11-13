@@ -3,12 +3,12 @@ import pygame
 from player_sprite import *
 
 
-from constants import WIDTH, HEIGHT, HUD_HEIGHT,SCALE, PLAYER_SPEED, PLAYER_SIZE, PLAYER_HITBOX, MYDIR, SWORD_HITBOX, SET_COLOR, HEATH_SIZE
+from constants import WIDTH, HEIGHT, HUD_HEIGHT,SCALE, PLAYER_SPEED, PLAYER_SIZE, PLAYER_HITBOX, MYDIR, SWORD_SIZE, SET_COLOR, HEATH_SIZE
 
 class Player:
     def __init__(self, display, observer):
         self.sprites = pygame.image.load(MYDIR+"/Sprites/Link.png")
-        self.hearths = pygame.image.load(MYDIR+"/Sprites/HUD.png").convert()
+        self.hub_sprites = pygame.image.load(MYDIR+"/Sprites/HUD.png").convert()
 
         self.location = (WIDTH*SCALE/2,HEIGHT*SCALE/2)
 
@@ -184,16 +184,21 @@ class Player:
         # Give observer current hitboxes
         self.observer.update_player(self.player_hitbox, self.sword_hitbox)
 
-    def load_hearths(self):
+    def load_hub(self):
+        load_sword = pygame.Surface((SWORD_SIZE[0],SWORD_SIZE[1])).convert_alpha()
+        load_sword.blit(self.hub_sprites, (0,0), (564,137,SWORD_SIZE[0],SWORD_SIZE[1]))
+        load_sword = pygame.transform.scale(load_sword, (SWORD_SIZE[0]*SCALE,SWORD_SIZE[1]*SCALE))
+        self.display.blit(load_sword, (128*SCALE,24*SCALE, SWORD_SIZE[0]*SCALE,SWORD_SIZE[1]*SCALE))
+
         for x in range(self.max_health):
             load_heath = pygame.Surface((HEATH_SIZE,HEATH_SIZE)).convert_alpha()
             
             if self.health > x:
-                load_heath.blit(self.hearths, (0,0), (645,117,HEATH_SIZE,HEATH_SIZE))
+                load_heath.blit(self.hub_sprites, (0,0), (645,117,HEATH_SIZE,HEATH_SIZE))
             if self.health - x == 0.5:
-                load_heath.blit(self.hearths, (0,0), (636,117,HEATH_SIZE,HEATH_SIZE))
+                load_heath.blit(self.hub_sprites, (0,0), (636,117,HEATH_SIZE,HEATH_SIZE))
             if self.health <= x:
-                load_heath.blit(self.hearths, (0,0), (627,117,HEATH_SIZE,HEATH_SIZE))
+                load_heath.blit(self.hub_sprites, (0,0), (627,117,HEATH_SIZE,HEATH_SIZE))
 
             load_heath = pygame.transform.scale(load_heath, (HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
             self.display.blit(load_heath, ((176+8*(x%8))*SCALE,(32+8*(x//8))*SCALE, HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))

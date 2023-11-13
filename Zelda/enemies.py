@@ -1,6 +1,7 @@
 import pygame
 import random
-from constants import WIDTH, HEIGHT, SCALE, MYDIR, OCTOROC_SIZE, OCTOROC_SPEED, OCTOROC_HITBOX, SET_COLOR
+from projectiles import Rock
+from constants import WIDTH, HEIGHT, SCALE, MYDIR, OCTOROC_SIZE, OCTOROC_SPEED, OCTOROC_HITBOX, SET_COLOR, ROCK_SIZE, ROCK_SPPED
 
 class Enemy:
     def __init__(self):
@@ -14,7 +15,7 @@ class Enemy:
 
 # -----------------------------------------------------------
 
-class Octoroc:
+class Octoroc(Enemy):
     def __init__(self, display, observer, location = (WIDTH*SCALE/3,HEIGHT*SCALE/2)):
         self.location = location
         self.health = 3
@@ -29,6 +30,8 @@ class Octoroc:
         # 0: moving | 1: attacked
         self.state = 0
         self.invulnerability_frames = 15*15
+
+        self.rock = None
 
         self.hitbox = []
 
@@ -52,13 +55,22 @@ class Octoroc:
 
         self.hitbox = (self.location[0], self.location[1],self.location[0]+OCTOROC_HITBOX, self.location[1]+OCTOROC_HITBOX)
 
+        if self.rock:
+            self.rock.update(self.display)
+            self.observer.update_projectiles(self.rock)
+            if self.rock.crashed():
+                self.rock = None
+        # else:
+        #     self.observer.update_projectiles((0,0,0,0))
+
         # # Check hitbox
         # pygame.draw.rect(self.display, "black", (self.hitbox[0], self.hitbox[1], 3, 3))
         # pygame.draw.rect(self.display, "black", (self.hitbox[2], self.hitbox[3], 3, 3))
 
         # Give observer current position
-        self.observer.update_enemy(self.hitbox)
+        self.observer.update_enemy(self.current_direction, self.hitbox)
         # print(self.observer.overlap(self.hitbox))
+        self.load_enemie()
 
     def check_next_position(self, x, y):
         l = ((x + y)+1)/2
@@ -84,10 +96,14 @@ class Octoroc:
             self.health -= 1
             self.invulnerability_frames = 5
 
+    def shoot(self):
+        if not self.rock:
+            self.rock = Rock(self.location, self.current_direction)
+
     def load_enemie(self):
         enemie_sprite = pygame.Surface((OCTOROC_SIZE,OCTOROC_SIZE)).convert_alpha()
 
-        enemie_sprite.blit(Enemy().get_sprites(), (0,0), (1 + 34 * abs(self.current_direction[0]),11 + 17 * self.state,OCTOROC_SIZE,OCTOROC_SIZE))
+        enemie_sprite.blit(Enemy().sprites, (0,0), (1 + 34 * abs(self.current_direction[0]),11 + 17 * self.state,OCTOROC_SIZE,OCTOROC_SIZE))
         enemie_sprite = pygame.transform.scale(enemie_sprite, (OCTOROC_SIZE*SCALE,OCTOROC_SIZE*SCALE))
 
         if self.current_direction[0] > 0:
@@ -99,4 +115,3 @@ class Octoroc:
 
         self.display.blit(enemie_sprite, (self.location[0], self.location[1], OCTOROC_SIZE*SCALE,OCTOROC_SIZE*SCALE))
         
-     

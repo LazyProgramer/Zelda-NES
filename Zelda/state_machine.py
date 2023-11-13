@@ -5,13 +5,15 @@ class State:
         self.name = name
 
     def enter(self):
-        print("Entering {self.name}")
+        # print(f"Entering {self.name}")
+        pass
 
     def update(self, object):
         object.update()
 
     def exit(self):
-        print("Leaving {self.name}")
+        # print(f"Leaving {self.name}")
+        pass
 
 
 class Transition:
@@ -24,7 +26,7 @@ class Idle(State):
         super().__init__(self.__class__.__name__)
 
     def update(self, object):
-        print("waiting for your command...")
+        # print("waiting for your command...")
         return super().update(object)
     
 class Walk(State):
@@ -32,7 +34,7 @@ class Walk(State):
         super().__init__(self.__class__.__name__)
 
     def update(self, object):
-        print("Moving")
+        # print("Moving")
         return super().update(object)
     
 
