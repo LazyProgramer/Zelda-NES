@@ -1,6 +1,7 @@
 import pygame
 import random
-from constants import WIDTH, HEIGHT, SCALE, MYDIR, OCTOROC_SIZE, OCTOROC_SPEED, OCTOROC_HITBOX, SET_COLOR
+from projectiles import Rock
+from constants import WIDTH, HEIGHT, SCALE, MYDIR, OCTOROC_SIZE, OCTOROC_SPEED, OCTOROC_HITBOX, SET_COLOR, ROCK_SIZE, ROCK_SPPED
 
 class Enemy:
     def __init__(self):
@@ -14,7 +15,7 @@ class Enemy:
 
 # -----------------------------------------------------------
 
-class Octoroc:
+class Octoroc(Enemy):
     def __init__(self, display, observer, location = (WIDTH*SCALE/3,HEIGHT*SCALE/2)):
         self.location = location
         self.health = 3
@@ -26,11 +27,20 @@ class Octoroc:
         self.display = display
         self.observer = observer
 
+        # 0: moving | 1: attacked
+        self.state = 0
+        self.invulnerability_frames = 15*15
+
+        self.rock = None
+
         self.hitbox = []
 
     def update(self):
-        # if damaged():
-        #     pass
+        if self.state == 1 and self.invulnerability_frames <= 0:
+            self.state = 0
+            return
+        else:
+            self.invulnerability_frames -= 1
 
         # Change direction, bigger chance to change the more he keeps moving in the same direction
         if self.change_direction > random.random():
@@ -45,13 +55,22 @@ class Octoroc:
 
         self.hitbox = (self.location[0], self.location[1],self.location[0]+OCTOROC_HITBOX, self.location[1]+OCTOROC_HITBOX)
 
+        if self.rock:
+            self.rock.update(self.display)
+            self.observer.update_projectiles(self.rock)
+            if self.rock.crashed():
+                self.rock = None
+        # else:
+        #     self.observer.update_projectiles((0,0,0,0))
+
         # # Check hitbox
         # pygame.draw.rect(self.display, "black", (self.hitbox[0], self.hitbox[1], 3, 3))
         # pygame.draw.rect(self.display, "black", (self.hitbox[2], self.hitbox[3], 3, 3))
 
         # Give observer current position
-        self.observer.update_enemy(self.hitbox)
+        self.observer.update_enemy(self.current_direction, self.hitbox)
         # print(self.observer.overlap(self.hitbox))
+        self.load_enemie()
 
     def check_next_position(self, x, y):
         l = ((x + y)+1)/2
@@ -72,36 +91,27 @@ class Octoroc:
         return True
     
     def damaged(self):
-        pass    
+        if self.state == 0:
+            self.state = 1
+            self.health -= 1
+            self.invulnerability_frames = 5
+
+    def shoot(self):
+        if not self.rock:
+            self.rock = Rock(self.location, self.current_direction)
 
     def load_enemie(self):
         enemie_sprite = pygame.Surface((OCTOROC_SIZE,OCTOROC_SIZE)).convert_alpha()
-        enemie_sprite.blit(Enemy().get_sprites(), (0,0), (1,11,OCTOROC_SIZE,OCTOROC_SIZE))
+
+        enemie_sprite.blit(Enemy().sprites, (0,0), (1 + 34 * abs(self.current_direction[0]),11 + 17 * self.state,OCTOROC_SIZE,OCTOROC_SIZE))
         enemie_sprite = pygame.transform.scale(enemie_sprite, (OCTOROC_SIZE*SCALE,OCTOROC_SIZE*SCALE))
+
+        if self.current_direction[0] > 0:
+            enemie_sprite = pygame.transform.flip(enemie_sprite, True, False)
+        elif self.current_direction[1] < 0:
+            enemie_sprite = pygame.transform.flip(enemie_sprite, False, True)
+
         enemie_sprite.set_colorkey(SET_COLOR)
-        self.display.blit(enemie_sprite, (self.location[0], self.location[1], OCTOROC_SIZE*SCALE,OCTOROC_SIZE*SCALE))  
 
-        # # Get player sprite
-        # enemie_sprite.blit(Enemy().get_sprites(), (0,0), (35 - 34 * self.current_direction[1],11,OCTOROC_SIZE,OCTOROC_SIZE))
-        # enemie_sprite = pygame.transform.scale(enemie_sprite, (OCTOROC_SIZE*SCALE,OCTOROC_SIZE*SCALE))
-
-        # if self.current_direction[0] < 0:
-        #     enemie_sprite = pygame.transform.flip(enemie_sprite, True, False)
-        # elif self.current_direction[1] > 0:
-        #     enemie_sprite = pygame.transform.flip(enemie_sprite, False, True)
-# 1 11
-# 35 11
-
-    # Not sure if better then pure random after 10 moves
-    # def change_direction(self):
-    #     weights = [0.5,0.5,0.5,0.5]
-    #     id = self.directions.index(self.current_direction)
-    #     next_mov_id = (id+1)%4
-    #     weights[id] = 20 - self.moves_in_same_direction / 4
-    #     weights[next_mov_id] = self.moves_in_same_direction / 4
-    #     print(weights)
-    #     new_direction = random.choices(self.directions, weights=weights)[0]
-    #     if self.current_direction != new_direction:
-    #         self.current_direction = new_direction
-    #         self.moves_in_same_direction = 0
-     
+        self.display.blit(enemie_sprite, (self.location[0], self.location[1], OCTOROC_SIZE*SCALE,OCTOROC_SIZE*SCALE))
+        

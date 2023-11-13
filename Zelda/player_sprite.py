@@ -3,9 +3,12 @@ from constants import MYDIR, PLAYER_SIZE, SCALE, SET_COLOR
 
 class PlayerSprite:
     def __init__(self):
-        self.sprites = pygame.image.load("Zelda/Sprites/Link.png")
+        self.sprites = pygame.image.load(MYDIR + "/Sprites/Link.png")
         self.walk_frames = []
         self.attack_frames = []
+
+        self.f = 0
+        self.tick = 0
 
         # self.walkUpArray = None
         # self.walkLeftArray = None
@@ -77,6 +80,10 @@ class PlayerSprite:
 
     def update(self, display, location, direction, current_event):
         #print(direction)
+        self.tick += 1
+        if self.tick >= 6:
+            self.f += 1
+            self.tick = 0
         # Down
         if current_event == "idleWalk" or current_event == "attackWalk" or current_event == "damagedWalk" or current_event == "walkIdle" or current_event == "attackIdle" or current_event == "damagedIdle":
             if direction == (0,1):    

@@ -5,13 +5,15 @@ class State:
         self.name = name
 
     def enter(self):
-        print("Entering {self.name}")
+        # print(f"Entering {self.name}")
+        pass
 
     def update(self, display, object, event):
         object.update(display, event)
 
     def exit(self):
-        print("Leaving {self.name}")
+        # print(f"Leaving {self.name}")
+        pass
 
 
 class Transition:
@@ -74,7 +76,7 @@ class FSM:
         self.current_state: State = self._states[0]
         self.end: State = self._states[-1]
 
-    def update(self, event, display, object):
+    def update(self, display, event, object):
         if event:
             trans = self._transitions.get(event)
             if trans and trans._from == self.current_state:

@@ -4,12 +4,12 @@ from player_sprite import *
 from state_machine import *
 
 
-from constants import WIDTH, HEIGHT, HUD_HEIGHT,SCALE, PLAYER_SPEED, PLAYER_SIZE, PLAYER_HITBOX, MYDIR, SWORD_HITBOX, SET_COLOR, HEATH_SIZE
+from constants import WIDTH, HEIGHT, HUD_HEIGHT,SCALE, PLAYER_SPEED, PLAYER_SIZE, PLAYER_HITBOX, MYDIR, SWORD_SIZE, SET_COLOR, HEATH_SIZE
 
 class Player:
     def __init__(self, display, observer):
         self.sprites = pygame.image.load(MYDIR+"/Sprites/Link.png")
-        self.hearths = pygame.image.load(MYDIR+"/Sprites/HUD.png").convert()
+        self.hub_sprites = pygame.image.load(MYDIR+"/Sprites/HUD.png").convert()
 
         self.location = (WIDTH*SCALE/2,HEIGHT*SCALE/2)
 
@@ -59,6 +59,9 @@ class Player:
 
         self.spriteFSM = FSM(self.spriteStates, self.spriteTransitions)
 
+        self.invulnerability_frames = 15*15
+        self.took_damaged = 0
+
     def get_direction(self):
         return self._direction
 
@@ -71,7 +74,7 @@ class Player:
         self.status = 0
 
     # Verify is next position is possible then move
-    def player_move(self, x, y):
+    def player_move(self, x, y):        
         self._direction = (x, y)
         # Map update, updates map if player leaves playble area
         # PLAYER_SPEED is here or we can cause seizure
@@ -211,25 +214,40 @@ class Player:
         # Give observer current hitboxes
         self.observer.update_player(self.player_hitbox, self.sword_hitbox)
 
-    def load_hearths(self):
+    def load_hub(self):
+        load_sword = pygame.Surface((SWORD_SIZE[0],SWORD_SIZE[1])).convert_alpha()
+        load_sword.blit(self.hub_sprites, (0,0), (564,137,SWORD_SIZE[0],SWORD_SIZE[1]))
+        load_sword = pygame.transform.scale(load_sword, (SWORD_SIZE[0]*SCALE,SWORD_SIZE[1]*SCALE))
+        self.display.blit(load_sword, (128*SCALE,24*SCALE, SWORD_SIZE[0]*SCALE,SWORD_SIZE[1]*SCALE))
+
         for x in range(self.max_health):
             load_heath = pygame.Surface((HEATH_SIZE,HEATH_SIZE)).convert_alpha()
             
             if self.health > x:
-                load_heath.blit(self.hearths, (0,0), (645,117,HEATH_SIZE,HEATH_SIZE))
+                load_heath.blit(self.hub_sprites, (0,0), (645,117,HEATH_SIZE,HEATH_SIZE))
             if self.health - x == 0.5:
-                load_heath.blit(self.hearths, (0,0), (636,117,HEATH_SIZE,HEATH_SIZE))
+                load_heath.blit(self.hub_sprites, (0,0), (636,117,HEATH_SIZE,HEATH_SIZE))
             if self.health <= x:
-                load_heath.blit(self.hearths, (0,0), (627,117,HEATH_SIZE,HEATH_SIZE))
+                load_heath.blit(self.hub_sprites, (0,0), (627,117,HEATH_SIZE,HEATH_SIZE))
 
             load_heath = pygame.transform.scale(load_heath, (HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
             self.display.blit(load_heath, ((176+8*(x%8))*SCALE,(32+8*(x//8))*SCALE, HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
 
-    def update(self):
-        pass
+    # Needs invulnerability frames
+    def tookDamaged(self):
+        if self.took_damaged == 0:
+            self.took_damaged = 1
+            self.health -= 0.5
+            self.invulnerability_frames = 5
 
-    def update(self, display, current_event):
-        self.playerSprite.update(display, self.location, self.get_direction(), current_event)
+    def update(self, display, current_event = "idleWalk"):
+        if self.took_damaged == 1 and self.invulnerability_frames <= 0:
+            self.took_damaged = 0
+        else:
+            self.invulnerability_frames -= 1
+        
+        # display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3))
+        self.playerSprite.update(self.display, self.location, self.get_direction(), current_event)
         
     def attack(self): 
         self.status = 1
@@ -247,5 +265,5 @@ class Player:
         # self.display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3)) 
         return (0,0)
     
-    def stateMachine(self, current_event, display):
-        self.fsm.update(current_event, display, self)
+    def stateMachine(self, current_event):
+        self.fsm.update(self.display, current_event, self)

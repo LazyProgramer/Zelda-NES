@@ -105,16 +105,22 @@ while running:
 
     # Load current player sprite
     player_1.load_player()
-    player_1.load_hearths()
-    player_1.stateMachine(current_event, display)
-    #fsm.update(current_event, display, player_1)
+    player_1.load_hub()
+    player_1.update(display)
+    
+    player_1.stateMachine(current_event)
+    # fsm.update(state_event, player_1)
+    # fsm.update(current_event, display, player_1)
 
     # Load enemies
     for enemy in enemies:
-        enemy.update()
-        enemy.load_enemie()
+        if enemy.health <= 0:
+            enemies.remove(enemy)
+        else:
+            enemy.update()
+            # enemy.load_enemie()
 
-    # print(observer.notify())
+    observer.notify(player_1, enemies)
     
     # update window
     pygame.display.flip()
