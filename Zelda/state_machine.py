@@ -8,8 +8,8 @@ class State:
         # print(f"Entering {self.name}")
         pass
 
-    def update(self, object):
-        object.update()
+    def update(self, display, object, event):
+        object.update(display, event)
 
     def exit(self):
         # print(f"Leaving {self.name}")
@@ -25,37 +25,67 @@ class Idle(State):
     def __init__(self) -> None:
         super().__init__(self.__class__.__name__)
 
-    def update(self, object):
-        # print("waiting for your command...")
-        return super().update(object)
+    def update(self, display, object, event):
+        print("waiting for your command...")
+        return super().update(display, object, event)
     
 class Walk(State):
     def __init__(self) -> None:
         super().__init__(self.__class__.__name__)
 
-    def update(self, object):
-        # print("Moving")
-        return super().update(object)
+    def update(self, display, object, event):
+        print("Moving")
+        return super().update(display, object, event)
     
+class Fight(State):
+    def __init__(self) -> None:
+        super().__init__(self.__class__.__name__)
+
+    def update(self, display, object, event):
+        print("Attacking")
+        return super().update(display, object, event)
+    
+class Damaged(State):
+    def __init__(self) -> None:
+        super().__init__(self.__class__.__name__)
+
+    def update(self, display, object, event):
+        print("Taking damage")
+        return super().update(display, object, event)
+    
+class LeftLeg(State):
+    def __init__(self) -> None:
+        super().__init__(self.__class__.__name__)
+
+    def update(self, display, object, event):
+        print("Left leg")
+        return super().update(display, object, event)
+    
+class RightLeg(State):
+    def __init__(self) -> None:
+        super().__init__(self.__class__.__name__)
+
+    def update(self, display, object, event):
+        print("Right leg")
+        return super().update(display, object, event)
 
 class FSM:
     def __init__(self, states: list[State], transitions: dict[Transition]) -> None:
         self._states = states
         self._transitions = transitions
-
         self.current_state: State = self._states[0]
         self.end: State = self._states[-1]
 
-    def update(self, event, object):
+    def update(self, display, event, object):
         if event:
             trans = self._transitions.get(event)
             if trans and trans._from == self.current_state:
                 self.current_state.exit()
                 self.current_state = trans._to
                 self.current_state.enter()
-        self.current_state.update(object)
+        self.current_state.update(display, object, event)
 
         if self.current_state == self.end:
             self.current_state.exit()
             return False
-        return True
+        return True 

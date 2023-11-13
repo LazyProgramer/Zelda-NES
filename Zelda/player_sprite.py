@@ -5,6 +5,7 @@ class PlayerSprite:
     def __init__(self):
         self.sprites = pygame.image.load(MYDIR + "/Sprites/Link.png")
         self.walk_frames = []
+        self.attack_frames = []
 
         self.f = 0
         self.tick = 0
@@ -29,7 +30,6 @@ class PlayerSprite:
                 walk_frame = self.walk_frames[x - 4]
                 
                 walk_frame = pygame.transform.flip(walk_frame, True, False)
-
 
             walk_frame.set_colorkey(SET_COLOR)
             self.walk_frames.append(walk_frame)
@@ -77,21 +77,28 @@ class PlayerSprite:
 
         # self.walkUpArray = [upLeftLegSprite, upRightLegSprite]
 
-    def update(self, display, location, direction):
+
+    def update(self, display, location, direction, current_event):
         #print(direction)
         self.tick += 1
         if self.tick >= 6:
             self.f += 1
             self.tick = 0
         # Down
-        if direction == (0,1): 
-            display.blit(self.walk_frames[0 + self.f%2], (location[0], location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
-        # Right
-        elif direction == (1,0):
-            display.blit(self.walk_frames[2 + self.f%2], (location[0], location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
-        # Up
-        elif direction == (0,-1):
-            display.blit(self.walk_frames[4 + self.f%2], (location[0], location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
-        # Left
-        elif direction == (-1,0):
-            display.blit(self.walk_frames[6 + self.f%2], (location[0], location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
+        if current_event == "idleWalk" or current_event == "attackWalk" or current_event == "damagedWalk" or current_event == "walkIdle" or current_event == "attackIdle" or current_event == "damagedIdle":
+            if direction == (0,1):    
+                display.blit(self.walk_frames[0], (location[0], location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
+            # Right
+            elif direction == (1,0):
+                display.blit(self.walk_frames[2], (location[0], location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
+            # Up
+            elif direction == (0,-1):
+                display.blit(self.walk_frames[4], (location[0], location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
+            # Left
+            elif direction == (-1,0):
+                display.blit(self.walk_frames[6], (location[0], location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
+        #elif current_event == "idleAttack" or current_event == "walkAttack" or current_event == "damagedAttack":
+            
+
+
+        #elif current_event == "idleDamaged" or current_event == "walkDamaged" or current_event == "damagedAttack":

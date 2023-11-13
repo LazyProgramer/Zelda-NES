@@ -1,6 +1,7 @@
 from tkinter import SEL
 import pygame
 from player_sprite import *
+from state_machine import *
 
 
 from constants import WIDTH, HEIGHT, HUD_HEIGHT,SCALE, PLAYER_SPEED, PLAYER_SIZE, PLAYER_HITBOX, MYDIR, SWORD_SIZE, SET_COLOR, HEATH_SIZE
@@ -22,6 +23,41 @@ class Player:
         self.playerSprite = PlayerSprite()
 
         self.status = 0
+        
+        self.idle = Idle()
+        self.walk = Walk()
+        self.fight = Fight()
+        self.damaged = Damaged()
+
+        self.states = [self.walk, self.idle, self.fight, self.damaged]
+        self.transitions = {    
+            "idleWalk": Transition(self.idle, self.walk),
+            "idleAttack": Transition(self.idle, self.fight),    
+            "idleDamaged": Transition(self.idle, self.damaged),
+            "walkIdle": Transition(self.walk, self.idle),
+            "walkAttack": Transition(self.walk, self.fight),
+            "walkDamaged": Transition(self.walk, self.damaged),
+            "attackIdle": Transition(self.fight, self.idle),
+            "attackWalk": Transition(self.fight, self.walk),
+            "attackDamaged": Transition(self.fight, self.damaged),
+            "damagedIdle": Transition(self.damaged, self.idle),
+            "damagedWalk": Transition(self.damaged, self.walk),
+            "damagedAttack": Transition(self.damaged, self.fight)
+        }
+
+        self.fsm = FSM(self.states, self.transitions)
+
+        self.left = LeftLeg()
+        self.right = RightLeg()
+
+        self.spriteStates = [self.left, self.right]
+
+        self.spriteTransitions = {
+            "leftRight": Transition(self.left, self.right),
+            "rightLeft": Transition(self.right, self.left)
+        }
+
+        self.spriteFSM = FSM(self.spriteStates, self.spriteTransitions)
 
         self.invulnerability_frames = 15*15
         self.took_damaged = 0
@@ -88,12 +124,6 @@ class Player:
 
     def load_sprites(self):
         self.playerSprite.load_sprites()
-
-        """player_sprite = pygame.Surface((15,15)).convert_alpha()
-        player_sprite.blit(self.sprites, (0,0), (69,11,15,15))
-        player_sprite = pygame.transform.scale(player_sprite, (15*3,15*3))
-        player_sprite.set_colorkey((116,116,116))
-        display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3))"""
 
     def load_player(self):
         if self.status == 0:
@@ -210,14 +240,14 @@ class Player:
             self.health -= 0.5
             self.invulnerability_frames = 5
 
-    def update(self):
+    def update(self, display, current_event = "idleWalk"):
         if self.took_damaged == 1 and self.invulnerability_frames <= 0:
             self.took_damaged = 0
         else:
             self.invulnerability_frames -= 1
         
-        self.playerSprite.update(self.display, self.location, self.get_direction())
         # display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3))
+        self.playerSprite.update(self.display, self.location, self.get_direction(), current_event)
         
     def attack(self): 
         self.status = 1
@@ -234,3 +264,6 @@ class Player:
         # player_sprite.set_colorkey((116,116,116))
         # self.display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3)) 
         return (0,0)
+    
+    def stateMachine(self, current_event):
+        self.fsm.update(self.display, current_event, self)
