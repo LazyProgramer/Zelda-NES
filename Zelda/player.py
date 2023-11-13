@@ -234,7 +234,7 @@ class Player:
             self.display.blit(load_heath, ((176+8*(x%8))*SCALE,(32+8*(x//8))*SCALE, HEATH_SIZE*SCALE,HEATH_SIZE*SCALE))
 
     # Needs invulnerability frames
-    def damaged(self):
+    def tookDamaged(self):
         if self.took_damaged == 0:
             self.took_damaged = 1
             self.health -= 0.5

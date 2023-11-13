@@ -21,7 +21,7 @@ class Obeserver:
         for e in range(len(self.enemies_hitbox)):
             
             if self.overlap(self.player_hitbox, self.enemies_hitbox[e]):
-                player.damaged()
+                player.tookDamaged()
             if self.overlap(self.sword_hitbox, self.enemies_hitbox[e]):
                 enemies[e].damaged()
             if self.in_sight(self.player_hitbox, self.enemies_hitbox[e], self.enemies_directions[e]):
@@ -29,7 +29,7 @@ class Obeserver:
         
         for projectile in self.enemies_projectiles:
             if self.overlap(self.player_hitbox, projectile.hitbox):
-                player.damaged()
+                player.tookDamaged()
                 projectile.state = 1
 
         
