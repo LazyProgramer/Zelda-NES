@@ -36,29 +36,6 @@ enemies = [octoroc]
 
 current_event = "walkIdle"
 
-"""idle = Idle()
-walk = Walk()
-attack = Fight()
-damaged = Damaged()
-
-states = [walk, idle, attack, damaged]
-transitions = {    
-    "idleWalk": Transition(idle, walk),
-    "idleAttack": Transition(idle, attack),    
-    "idleDamaged": Transition(idle, damaged),
-    "walkIdle": Transition(walk, idle),
-    "walkAttack": Transition(walk, attack),
-    "walkDamaged": Transition(walk, damaged),
-    "attackIdle": Transition(attack, idle),
-    "attackWalk": Transition(attack, walk),
-    "attackDamaged": Transition(attack, damaged),
-    "damagedIdle": Transition(damaged, idle),
-    "damagedWalk": Transition(damaged, walk),
-    "damagedAttack": Transition(damaged, attack)
-}
-
-fsm = FSM(states, transitions)"""
-
 player_1 = Player(display, observer)
 player_1.load_sprites()
 display_loader = Display_loader()
@@ -109,8 +86,6 @@ while running:
     player_1.update(display)
     
     player_1.stateMachine(current_event)
-    # fsm.update(state_event, player_1)
-    # fsm.update(current_event, display, player_1)
 
     # Load enemies
     for enemy in enemies:
