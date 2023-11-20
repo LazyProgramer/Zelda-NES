@@ -16,7 +16,8 @@ class Display_loader:
     def __init__(self):        
         self.game_map = pygame.image.load(MYDIR+"/Sprites/Map.png").convert()
         self.hubs = pygame.image.load(MYDIR+"/Sprites/HUD.png").convert()
-        self.map_coords = (1,7)
+        # self.map_coords = (1,7)
+        self.map_coords = (8,8)
 
     def update_map(self, new_map):
         self.map_coords = (self.map_coords[0] + new_map[0],self.map_coords[1] + new_map[1])
