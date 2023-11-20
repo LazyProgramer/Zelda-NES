@@ -1,11 +1,16 @@
 import pygame
 import random
 from projectiles import Rock
-from constants import WIDTH, HEIGHT, SCALE, MYDIR, OCTOROC_SIZE, OCTOROC_SPEED, OCTOROC_HITBOX, SET_COLOR, ROCK_SIZE, ROCK_SPPED
+from constants import WIDTH, HEIGHT, SCALE, HUD_HEIGHT, MYDIR, OCTOROC_SIZE, OCTOROC_SPEED, OCTOROC_HITBOX, SET_COLOR, INVULNERABILITY_FRAMES
 
 class Enemy:
     def __init__(self):
         self.sprites = pygame.image.load(MYDIR+"/Sprites/Enemies.png")
+        # self.location
+        # self.speed
+        # self.size
+        # self.current_direction
+        # self.change_direction
 
     def get_sprites(self):
         return self.sprites
@@ -13,12 +18,33 @@ class Enemy:
     def chace_player(self):
         pass
 
+    def out_of_bounds(self, enemy):
+        if (enemy.location[0] + enemy.current_direction[0]*enemy.speed <= 0):
+            enemy.current_direction = (1,0)
+            enemy.change_direction = -0.05
+            return True, (1,0), -0.05
+        elif (enemy.location[0] + enemy.current_direction[0]*enemy.speed >= (WIDTH-enemy.size)*SCALE):
+            enemy.current_direction = (-1,0)
+            enemy.change_direction = -0.05
+            return True, (-1,0), -0.05
+        elif (enemy.location[1] + enemy.current_direction[1]*enemy.speed <= HUD_HEIGHT*SCALE):
+            enemy.current_direction = (0,1)
+            enemy.change_direction = -0.05
+            return True, (0,1), -0.05
+        elif (enemy.location[1] + enemy.current_direction[1]*enemy.speed >= (HEIGHT-enemy.size)*SCALE):
+            enemy.current_direction = (0,-1)
+            enemy.change_direction = -0.05
+            return True, (0,-1), -0.05
+
 # -----------------------------------------------------------
 
 class Octoroc(Enemy):
     def __init__(self, display, observer, location = (WIDTH*SCALE/3,HEIGHT*SCALE/2)):
         self.location = location
         self.health = 3
+
+        self.size = OCTOROC_SIZE
+        self.speed = OCTOROC_SPEED
 
         self.change_direction = 0
         self.current_direction = (1, 0)
@@ -29,7 +55,7 @@ class Octoroc(Enemy):
 
         # 0: moving | 1: attacked
         self.state = 0
-        self.invulnerability_frames = 15*15
+        self.invulnerability_frames = 0
 
         self.rock = None
 
@@ -47,8 +73,12 @@ class Octoroc(Enemy):
             self.change_direction = -0.05
             self.current_direction = random.choice(self.directions)
 
+        # Make sure enemy doesn't leave map
+        if Enemy().out_of_bounds(self):
+            pass
+
         # Verify if next position is in bounds and incricese chance to change direction
-        if self.check_next_position(self.current_direction[0], self.current_direction[1]):
+        elif self.check_next_position(self.current_direction[0], self.current_direction[1]):
             # Move to next position
             self.location = (self.location[0] + self.current_direction[0]*OCTOROC_SPEED, self.location[1] + self.current_direction[1]*OCTOROC_SPEED)
             self.change_direction += 0.05
@@ -82,7 +112,7 @@ class Octoroc(Enemy):
             n = 1
 
         # Funny calculation to have 1 if statement instead of 8
-        for i in range(int(self.location[n]), int(self.location[n]+OCTOROC_HITBOX)):
+        for i in range(int(self.location[n]), int(self.location[n]+OCTOROC_SIZE*SCALE)):
             if self.display.get_at(((int((self.location[m]+x)*n + i*m + OCTOROC_HITBOX*l*n)),
                                (int((self.location[m]+y)*m + i*n + OCTOROC_HITBOX*l*m))))[:3] != (252, 216, 168):
                 self.change_direction = 1
@@ -94,7 +124,7 @@ class Octoroc(Enemy):
         if self.state == 0:
             self.state = 1
             self.health -= 1
-            self.invulnerability_frames = 5
+            self.invulnerability_frames = INVULNERABILITY_FRAMES
 
     def shoot(self):
         if not self.rock:

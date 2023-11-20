@@ -4,7 +4,7 @@ from player_sprite import *
 from state_machine import *
 
 
-from constants import WIDTH, HEIGHT, HUD_HEIGHT,SCALE, PLAYER_SPEED, PLAYER_SIZE, PLAYER_HITBOX, MYDIR, SWORD_SIZE, SET_COLOR, HEATH_SIZE
+from constants import WIDTH, HEIGHT, HUD_HEIGHT,SCALE, PLAYER_SPEED, PLAYER_SIZE, PLAYER_HITBOX, MYDIR, SWORD_SIZE, SET_COLOR, HEATH_SIZE, INVULNERABILITY_FRAMES
 
 class Player:
     def __init__(self, display, observer):
@@ -12,6 +12,7 @@ class Player:
         self.hub_sprites = pygame.image.load(MYDIR+"/Sprites/HUD.png").convert()
 
         self.location = (WIDTH*SCALE/2,HEIGHT*SCALE/2)
+        # self.location = (WIDTH*SCALE/2+3,HEIGHT*SCALE/2+3)
 
         self.max_health = 16
         self.health = 16
@@ -59,7 +60,7 @@ class Player:
 
         self.spriteFSM = FSM(self.spriteStates, self.spriteTransitions)
 
-        self.invulnerability_frames = 15*15
+        self.invulnerability_frames = 0
         self.took_damaged = 0
 
     def get_direction(self):
@@ -115,7 +116,7 @@ class Player:
             n = 1
 
         # Funny calculation to have 1 if statement instead of 8
-        for i in range(int(self.location[n]), int(self.location[n]+PLAYER_HITBOX)):
+        for i in range(int(self.location[n]), int(self.location[n]+PLAYER_SIZE*SCALE)):
             if self.display.get_at(((int((self.location[m]+x)*n + i*m + PLAYER_HITBOX*l*n)),
                                (int((self.location[m]+y)*m + i*n + PLAYER_HITBOX*l*m))))[:3] != (252, 216, 168):
                 return False
@@ -219,7 +220,7 @@ class Player:
         load_sword.blit(self.hub_sprites, (0,0), (564,137,SWORD_SIZE[0],SWORD_SIZE[1]))
         load_sword = pygame.transform.scale(load_sword, (SWORD_SIZE[0]*SCALE,SWORD_SIZE[1]*SCALE))
         self.display.blit(load_sword, (128*SCALE,24*SCALE, SWORD_SIZE[0]*SCALE,SWORD_SIZE[1]*SCALE))
-
+        
         for x in range(self.max_health):
             load_heath = pygame.Surface((HEATH_SIZE,HEATH_SIZE)).convert_alpha()
             
@@ -238,7 +239,7 @@ class Player:
         if self.took_damaged == 0:
             self.took_damaged = 1
             self.health -= 0.5
-            self.invulnerability_frames = 5
+            self.invulnerability_frames = INVULNERABILITY_FRAMES
 
     def update(self, display, current_event = "idleWalk"):
         if self.took_damaged == 1 and self.invulnerability_frames <= 0:
@@ -246,6 +247,7 @@ class Player:
         else:
             self.invulnerability_frames -= 1
         
+        print(self.location)
         # display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3))
         self.playerSprite.update(self.display, self.location, self.get_direction(), current_event)
         

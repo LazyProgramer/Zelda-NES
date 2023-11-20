@@ -1,6 +1,6 @@
 import pygame
 import random
-from constants import WIDTH, HEIGHT, SCALE, MYDIR, OCTOROC_SIZE, OCTOROC_SPEED, OCTOROC_HITBOX, SET_COLOR, ROCK_SIZE, ROCK_SPPED
+from constants import WIDTH, MAP_HEIGHT, SCALE, MYDIR, SET_COLOR, ROCK_SIZE, ROCK_SPPED
 
 class Projectile:
     def __init__(self):
@@ -31,7 +31,7 @@ class Rock(Projectile):
     def crashed(self):
         if self.state == 1:
             return True
-        if 0 < self.location[0] < 600 and 0 < self.location[1] < 600:
+        if 0 < self.location[0] < WIDTH * SCALE and MAP_HEIGHT < self.location[1] < WIDTH * SCALE:
             return False
         return True
     
