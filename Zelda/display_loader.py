@@ -1,5 +1,6 @@
 import pygame
 from constants import WIDTH,MAP_HEIGHT,HUD_HEIGHT,SCALE,MYDIR,BACKGROUND,GREEN
+from enemies import Octoroc
 
 """
 missing_area = (WIDTH,24)
@@ -16,18 +17,28 @@ class Display_loader:
     def __init__(self):        
         self.game_map = pygame.image.load(MYDIR+"/Sprites/Map.png").convert()
         self.hubs = pygame.image.load(MYDIR+"/Sprites/HUD.png").convert()
-        # self.map_coords = (1,7)
+        
+        self.enemy_spawners = []
+
         self.map_coords = (8,8)
+        self.map_surface = None
+        self.update_map_surface()
+
 
     def update_map(self, new_map):
         self.map_coords = (self.map_coords[0] + new_map[0],self.map_coords[1] + new_map[1])
+        self.update_map_surface()
 
-    def load_map(self, display):
+    def update_map_surface(self):
         map_x = WIDTH*(self.map_coords[0]-1)+self.map_coords[0]
         map_y = MAP_HEIGHT*(self.map_coords[1]-1)+self.map_coords[1]
-        map_surface = pygame.Surface((WIDTH,MAP_HEIGHT)).convert_alpha()
-        map_surface.blit(self.game_map, (0,0), (map_x,map_y,WIDTH,MAP_HEIGHT))
-        current_map = pygame.transform.scale(map_surface, (WIDTH*SCALE,MAP_HEIGHT*SCALE))
+        self.map_surface = pygame.Surface((WIDTH,MAP_HEIGHT)).convert_alpha()
+        self.map_surface.blit(self.game_map, (0,0), (map_x,map_y,WIDTH,MAP_HEIGHT))
+
+    def load_map(self, display):
+        for coords in self.enemy_spawners:
+            self.map_surface.set_at(coords, (252, 216, 168))
+        current_map = pygame.transform.scale(self.map_surface, (WIDTH*SCALE,MAP_HEIGHT*SCALE))
         current_map.set_colorkey(GREEN)
         display.blit(current_map, (0, HUD_HEIGHT*SCALE, WIDTH*SCALE,MAP_HEIGHT*SCALE)) 
 

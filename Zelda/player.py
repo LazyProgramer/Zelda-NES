@@ -4,15 +4,14 @@ from player_sprite import *
 from state_machine import *
 
 
-from constants import WIDTH, HEIGHT, HUD_HEIGHT,SCALE, PLAYER_SPEED, PLAYER_SIZE, PLAYER_HITBOX, MYDIR, SWORD_SIZE, SET_COLOR, HEATH_SIZE, INVULNERABILITY_FRAMES
+from constants import WIDTH, HEIGHT, HUD_HEIGHT,SCALE, PLAYER_SPEED, PLAYER_SIZE, PLAYER_SPRITE_SIZE, PLAYER_HITBOX, MYDIR, SWORD_SIZE, SET_COLOR, HEATH_SIZE, INVULNERABILITY_FRAMES
 
 class Player:
     def __init__(self, display, observer):
         self.sprites = pygame.image.load(MYDIR+"/Sprites/Link.png")
         self.hub_sprites = pygame.image.load(MYDIR+"/Sprites/HUD.png").convert()
 
-        self.location = (WIDTH*SCALE/2,HEIGHT*SCALE/2)
-        # self.location = (WIDTH*SCALE/2+3,HEIGHT*SCALE/2+3)
+        self.location = (WIDTH*SCALE/2+3,HEIGHT*SCALE/2+3)
 
         self.max_health = 16
         self.health = 16
@@ -75,7 +74,7 @@ class Player:
         self.status = 0
 
     # Verify is next position is possible then move
-    def player_move(self, x, y):        
+    def player_move(self, x, y):
         self._direction = (x, y)
         # Map update, updates map if player leaves playble area
         # PLAYER_SPEED is here or we can cause seizure
@@ -85,7 +84,7 @@ class Player:
             return (-1,0)
         # Load map to the right
         elif (self.location[0] + x >= (WIDTH-PLAYER_SIZE)*SCALE):
-            self.location = (PLAYER_SPEED, self.location[1])
+            self.location = (PLAYER_SPEED + 3, self.location[1])
             return (1,0)
         # Load map above
         elif (self.location[1] + y <= HUD_HEIGHT*SCALE):
@@ -93,7 +92,7 @@ class Player:
             return (0,-1)
         # Load map below 
         elif (self.location[1] + y >= (HEIGHT-PLAYER_SIZE)*SCALE):
-            self.location = (self.location[0], HUD_HEIGHT*SCALE+PLAYER_SPEED)
+            self.location = (self.location[0], HUD_HEIGHT*SCALE+PLAYER_SPEED-3)
             return (0,1)
         
         # Check player collision with map
@@ -140,68 +139,64 @@ class Player:
 
         # Attack
         else:
-            player_sprite = pygame.Surface((PLAYER_SIZE,PLAYER_SIZE)).convert_alpha()
+            # Sprite 
+            # Size:
+            # (16,27) -> Up Down
+            # (16,16), (27, 16), (23, 16), (19, 16) -> Left Right
+            # Coords:
+            # (94,47) -> Down (0,1)  || (16,27)::(111,47)
+            # (94,77) -> Left Right  || (27,16)::(111,77)
+            # (94,97) -> Up   (0,-1) || (16,28)::(111,97)
+
             self.status = 0
+            # n = 0
+            # m = 0
+            # if self._direction[1] == -1:
+            #     n = 1
 
-            # Get sword sprite size
-            if self._direction[0] == 0:                
-                sword_sprite_size = (7,15)
-            elif self._direction[1] == 0:
-                sword_sprite_size = (16,15)
+            # # Get sprite size: (16,27) -> Up Down || (27, 16) -> Left Right
+            # sprite_size = (PLAYER_SPRITE_SIZE + 11 * abs(self._direction[0]), PLAYER_SPRITE_SIZE + 11 * abs(self._direction[1]) + n)
 
-            # Get sword sprite
-            sword_sprite = pygame.Surface((sword_sprite_size[0],sword_sprite_size[1])).convert_alpha()
-            sword_sprite.blit(self.sprites, (0,0), (45-9*abs(self._direction[1]),154,sword_sprite_size[0],sword_sprite_size[1]))
-            sword_sprite = pygame.transform.scale(sword_sprite, (sword_sprite_size[0]*SCALE,sword_sprite_size[1]*SCALE))
+            # # Load player attack sprite
+            # player_sprite = pygame.Surface(sprite_size).convert_alpha()
+            # player_sprite.blit(self.sprites, (0,0), (111, 72 - 25 * self._direction[1] + 5 * abs(self._direction[0]),sprite_size[0],sprite_size[1]))
+            # player_sprite = pygame.transform.scale(player_sprite, (sprite_size[0]*SCALE,sprite_size[1]*SCALE))
 
-            # Get player sprite
-            player_sprite.blit(self.sprites, (0,0), (124 - 17 * self._direction[1],11,PLAYER_SIZE,PLAYER_SIZE))
-            player_sprite = pygame.transform.scale(player_sprite, (PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))
+            # # Rotate if player looking left
+            # if self._direction[0] == -1:
+            #     player_sprite = pygame.transform.flip(player_sprite, True, False)
+            #     m = 1
 
-            # Rotate sprite if needed
-            if self._direction[0] < 0:
-                sword_sprite = pygame.transform.flip(sword_sprite, True, False)
-                player_sprite = pygame.transform.flip(player_sprite, True, False)
-            if self._direction[1] > 0:
-                sword_sprite = pygame.transform.flip(sword_sprite, False, True)
+            # # Change all background colors (only green here) to the same color
+            # pixels = pygame.PixelArray(player_sprite)
+            # pixels.replace((0,128,0),(SET_COLOR))
+            # pixels.close()
 
-            # Set color key to remove background grey
-            sword_sprite.set_colorkey(SET_COLOR)
+            # # Set background color as transparent
+            # player_sprite.set_colorkey(SET_COLOR)
 
-            # Specific sword coords to load sprite and define hitbox
+            # # Load player attack sprite
+            # self.display.blit(player_sprite, (self.location[0] - 12 * m * SCALE, self.location[1] - 12 * n * SCALE, sprite_size[0]*SCALE,sprite_size[1]*SCALE))  
+
+            # Update sword hitbox
             match self._direction:
                 case(-1,0):
-                    self.display.blit(sword_sprite, (self.location[0]-PLAYER_HITBOX+12, self.location[1]+3, 
-                                                     sword_sprite_size[0]*SCALE,sword_sprite_size[1]*SCALE))
-                    
                     self.sword_hitbox = (self.location[0]-PLAYER_HITBOX+9, self.location[1]+7*3,
                                          self.location[0]-PLAYER_HITBOX+9+13*3, self.location[1]+7*3+12)
             
                 case(1,0):
-                    self.display.blit(sword_sprite, (self.location[0]+PLAYER_HITBOX-15, self.location[1]+3, 
-                                                     sword_sprite_size[0]*SCALE,sword_sprite_size[1]*SCALE))
-
                     self.sword_hitbox = (self.location[0]+PLAYER_HITBOX-15+9, self.location[1]+7*3,
                                          self.location[0]+PLAYER_HITBOX-15+16*3, self.location[1]+7*3+12)
             
                 case(0,-1):
-                    self.display.blit(sword_sprite, (self.location[0]+3*3, self.location[1]-12*3, 
-                                                     sword_sprite_size[0]*SCALE,sword_sprite_size[1]*SCALE))  
-
                     self.sword_hitbox = (self.location[0]+4*3, self.location[1]-13*3,
                                          self.location[0]+4*3+4*3, self.location[1]-13*3+13*3)
             
                 case(0,1):
-                    self.display.blit(sword_sprite, (self.location[0]+5*3, self.location[1]+PLAYER_HITBOX-12, 
-                                                     sword_sprite_size[0]*SCALE,sword_sprite_size[1]*SCALE))
-
                     self.sword_hitbox = (self.location[0]+5*3, self.location[1]+PLAYER_HITBOX-12+6,
                                          self.location[0]+5*3+5*3, self.location[1]+PLAYER_HITBOX-12+15*3)
 
-        # Load player after sword, so sword is placed behind player
-            player_sprite.set_colorkey(SET_COLOR)
-            self.display.blit(player_sprite, (self.location[0], self.location[1], PLAYER_SIZE*SCALE,PLAYER_SIZE*SCALE))  
-
+        # Update player hitbox
         self.player_hitbox = (self.location[0], self.location[1],
                               self.location[0]+PLAYER_HITBOX, self.location[1]+PLAYER_HITBOX)
         
@@ -246,8 +241,7 @@ class Player:
             self.took_damaged = 0
         else:
             self.invulnerability_frames -= 1
-        
-        print(self.location)
+
         # display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3))
         self.playerSprite.update(self.display, self.location, self.get_direction(), current_event)
         

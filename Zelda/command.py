@@ -6,40 +6,22 @@ class Command:
     
 class Up(Command):
     def execute(self, actor, current_event):
-        array = {}
-        array[0] = actor.player_move(0, -1)
-        array[1] = newEvent(current_event, "walk")
-        return array
+        return actor.player_move(0, -1), newEvent(current_event, "walk")
 class Down(Command):
     def execute(self, actor, current_event):
-        array1 = {}
-        array1[0] = actor.player_move(0, 1)
-        array1[1] = newEvent(current_event, "walk")
-        return array1
+        return actor.player_move(0, 1), newEvent(current_event, "walk")
 class Left(Command):
     def execute(self, actor, current_event):
-        array2 = {}
-        array2[0] = actor.player_move(-1, 0)
-        array2[1] = newEvent(current_event, "walk")
-        return array2
+        return actor.player_move(-1, 0), newEvent(current_event, "walk")
 class Right(Command):
     def execute(self, actor, current_event):
-        array3 = {}
-        array3[0] = actor.player_move(1, 0)
-        array3[1] = newEvent(current_event, "walk")
-        return array3
+        return actor.player_move(1, 0), newEvent(current_event, "walk")
 class Attack(Command):
     def execute(self, actor, current_event):
-        array4 = {}
-        array4[0] = actor.attack()
-        array4[1] = newEvent(current_event, "attack")
-        return array4
+        return actor.attack(), newEvent(current_event, "attack")
 class NoCommand(Command):
     def execute(self, actor, current_event):
-        array5 = {}
-        array5[0] = (0,0)
-        array5[1] = newEvent(current_event, "idle")
-        return array5
+        return (0,0), newEvent(current_event, "idle")
     
 def newEvent(current_event, var):
     if current_event == "walkIdle" or current_event == "attackIdle" or current_event == "damagedIdle":

@@ -10,6 +10,7 @@ from observer import Obeserver
 from player import Player
 from display_loader import Display_loader
 from enemies import Octoroc
+from enemy_spawner import Enemy_spawner
 
 GAME_EVENT = pygame.event.custom_type()
 
@@ -31,8 +32,9 @@ array = {} # will contain move_map and new state
 # octoroc_5 = Octoroc((WIDTH*SCALE-WIDTH*SCALE/3,HEIGHT*SCALE-HEIGHT*SCALE/3))
 # enemies = [octoroc_1,octoroc_2,octoroc_3,octoroc_4,octoroc_5]
 
-octoroc = Octoroc(display, observer, (WIDTH*SCALE/3,HEIGHT*SCALE/3))
-enemies = [octoroc]
+# octoroc = Octoroc(display, observer, (WIDTH*SCALE/3,HEIGHT*SCALE/3))
+enemies = []
+enemy_spawner = Enemy_spawner()
 
 current_event = "walkIdle"
 
@@ -90,11 +92,13 @@ while running:
         # command = input_handler.handleInput(key)
     if pressed_keys:
         command = input_handler.handleInput(pressed_keys[-1])
-        array = command().execute(player_1, current_event)
-        move_map = array[0]
-        current_event = array[1]
+        move_map, current_event = command().execute(player_1, current_event)
         print(current_event)
         display_loader.update_map(move_map)
+
+        if move_map != (0,0):
+            display_loader.enemy_spawners = enemy_spawner.spawn_enemy(display_loader.map_surface, display, observer)
+
 
     # Make background black
     display.fill(BACKGROUND)
@@ -113,14 +117,14 @@ while running:
     # fsm.update(current_event, display, player_1)
 
     # Load enemies
-    for enemy in enemies:
+    for enemy in enemy_spawner.enemies:
         if enemy.health <= 0:
-            enemies.remove(enemy)
+            enemy_spawner.enemies.remove(enemy)
         else:
             enemy.update()
             # enemy.load_enemie()
 
-    observer.notify(player_1, enemies)
+    observer.notify(player_1, enemy_spawner.enemies)
     
     # update window
     pygame.display.flip()

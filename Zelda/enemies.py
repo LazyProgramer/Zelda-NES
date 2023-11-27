@@ -1,7 +1,7 @@
 import pygame
 import random
 from projectiles import Rock
-from constants import WIDTH, HEIGHT, SCALE, HUD_HEIGHT, MYDIR, OCTOROC_SIZE, OCTOROC_SPEED, OCTOROC_HITBOX, SET_COLOR, INVULNERABILITY_FRAMES
+from constants import WIDTH, HEIGHT, SCALE, HUD_HEIGHT, MYDIR, OCTOROC_SIZE, OCTOROC_SPRITE_SIZE, OCTOROC_SPEED, OCTOROC_HITBOX, SET_COLOR, INVULNERABILITY_FRAMES
 
 class Enemy:
     def __init__(self):
@@ -131,10 +131,10 @@ class Octoroc(Enemy):
             self.rock = Rock(self.location, self.current_direction)
 
     def load_enemie(self):
-        enemie_sprite = pygame.Surface((OCTOROC_SIZE,OCTOROC_SIZE)).convert_alpha()
+        enemie_sprite = pygame.Surface((OCTOROC_SPRITE_SIZE,OCTOROC_SPRITE_SIZE)).convert_alpha()
 
-        enemie_sprite.blit(Enemy().sprites, (0,0), (1 + 34 * abs(self.current_direction[0]),11 + 17 * self.state,OCTOROC_SIZE,OCTOROC_SIZE))
-        enemie_sprite = pygame.transform.scale(enemie_sprite, (OCTOROC_SIZE*SCALE,OCTOROC_SIZE*SCALE))
+        enemie_sprite.blit(Enemy().sprites, (0,0), (18 + 34 * abs(self.current_direction[0]),11 + 17 * self.state,OCTOROC_SPRITE_SIZE,OCTOROC_SPRITE_SIZE))
+        enemie_sprite = pygame.transform.scale(enemie_sprite, (OCTOROC_SPRITE_SIZE*SCALE,OCTOROC_SPRITE_SIZE*SCALE))
 
         if self.current_direction[0] > 0:
             enemie_sprite = pygame.transform.flip(enemie_sprite, True, False)
@@ -143,5 +143,5 @@ class Octoroc(Enemy):
 
         enemie_sprite.set_colorkey(SET_COLOR)
 
-        self.display.blit(enemie_sprite, (self.location[0], self.location[1], OCTOROC_SIZE*SCALE,OCTOROC_SIZE*SCALE))
+        self.display.blit(enemie_sprite, (self.location[0], self.location[1], OCTOROC_SPRITE_SIZE*SCALE,OCTOROC_SPRITE_SIZE*SCALE))
         

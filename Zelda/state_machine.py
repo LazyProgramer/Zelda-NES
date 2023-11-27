@@ -26,7 +26,7 @@ class Idle(State):
         super().__init__(self.__class__.__name__)
 
     def update(self, display, object, event):
-        print("waiting for your command...")
+        # print("waiting for your command...")
         return super().update(display, object, event)
     
 class Walk(State):
@@ -34,7 +34,7 @@ class Walk(State):
         super().__init__(self.__class__.__name__)
 
     def update(self, display, object, event):
-        print("Moving")
+        # print("Moving")
         return super().update(display, object, event)
     
 class Fight(State):
@@ -42,7 +42,7 @@ class Fight(State):
         super().__init__(self.__class__.__name__)
 
     def update(self, display, object, event):
-        print("Attacking")
+        # print("Attacking")
         return super().update(display, object, event)
     
 class Damaged(State):
@@ -50,7 +50,7 @@ class Damaged(State):
         super().__init__(self.__class__.__name__)
 
     def update(self, display, object, event):
-        print("Taking damage")
+        # print("Taking damage")
         return super().update(display, object, event)
     
 class LeftLeg(State):
@@ -58,7 +58,7 @@ class LeftLeg(State):
         super().__init__(self.__class__.__name__)
 
     def update(self, display, object, event):
-        print("Left leg")
+        # print("Left leg")
         return super().update(display, object, event)
     
 class RightLeg(State):
@@ -66,7 +66,7 @@ class RightLeg(State):
         super().__init__(self.__class__.__name__)
 
     def update(self, display, object, event):
-        print("Right leg")
+        # print("Right leg")
         return super().update(display, object, event)
 
 class FSM:
