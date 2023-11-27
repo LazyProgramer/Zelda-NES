@@ -243,7 +243,7 @@ class Player:
             self.invulnerability_frames -= 1
 
         # display.blit(player_sprite, (self.location[0], self.location[1], 15*3,15*3))
-        self.playerSprite.update(self.display, self.location, self.get_direction(), current_event)
+        return self.playerSprite.update(self.display, self.location, self.get_direction(), current_event)
         
     def attack(self): 
         self.status = 1
@@ -262,4 +262,4 @@ class Player:
         return (0,0)
     
     def stateMachine(self, current_event):
-        self.fsm.update(self.display, current_event, self)
+        return self.fsm.update(self.display, current_event, self)

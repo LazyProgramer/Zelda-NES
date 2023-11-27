@@ -112,7 +112,7 @@ while running:
     player_1.load_hub()
     player_1.update(display)
     
-    player_1.stateMachine(current_event)
+    current_event = player_1.stateMachine(current_event)
     # fsm.update(state_event, player_1)
     # fsm.update(current_event, display, player_1)
 

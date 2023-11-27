@@ -24,13 +24,14 @@ class PlayerSprite:
             if x < 6:
                 walk_frame = pygame.Surface((PLAYER_SPRITE_SIZE,PLAYER_SPRITE_SIZE)).convert_alpha()
 
-                walk_frame.blit(self.sprites, (0,0), (1 + 17 * x,11,PLAYER_SPRITE_SIZE,PLAYER_SPRITE_SIZE))
+                self.walk_sprite_surface.blit(self.sprites, (0,0), (1 + 17 * x,11,PLAYER_SPRITE_SIZE,PLAYER_SPRITE_SIZE))
 
                 walk_frame = pygame.transform.scale(walk_frame, (PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             else:
                 walk_frame = self.walk_frames[x - 4]
                 
                 walk_frame = pygame.transform.flip(walk_frame, True, False)
+
 
             walk_frame.set_colorkey(SET_COLOR)
             self.walk_frames.append(walk_frame)
@@ -43,7 +44,7 @@ class PlayerSprite:
                 x -= 4
             attack_frame = pygame.Surface((PLAYER_SPRITE_SIZE,PLAYER_SPRITE_SIZE + 11)).convert_alpha()
 
-            attack_frame.blit(self.sprites, (0,0), (94 + 17 * x,47 + 50 * l,PLAYER_SPRITE_SIZE,PLAYER_SPRITE_SIZE + 11))
+            self.attack_frames_ver.blit(self.sprites, (0,0), (94 + 17 * x,47 + 50 * l,PLAYER_SPRITE_SIZE,PLAYER_SPRITE_SIZE + 11))
 
             attack_frame = pygame.transform.scale(attack_frame, (PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
 
@@ -63,7 +64,7 @@ class PlayerSprite:
 
                 attack_frame = pygame.Surface((PLAYER_SPRITE_SIZE + extra_pixels[x],PLAYER_SPRITE_SIZE)).convert_alpha()
 
-                attack_frame.blit(self.sprites, (0,0), (frame_coords[x],77,PLAYER_SPRITE_SIZE + extra_pixels[x],PLAYER_SPRITE_SIZE))
+                self.attack_frames_hor.blit(self.sprites, (0,0), (frame_coords[x],77,PLAYER_SPRITE_SIZE + extra_pixels[x],PLAYER_SPRITE_SIZE))
 
                 attack_frame = pygame.transform.scale(attack_frame, ((PLAYER_SPRITE_SIZE + extra_pixels[x])*SCALE,PLAYER_SPRITE_SIZE*SCALE))
 
@@ -80,15 +81,22 @@ class PlayerSprite:
             attack_frame.set_colorkey(SET_COLOR)
             self.attack_frames_hor.append(attack_frame)
 
+    def clear(): #serve para criar uma surface da cor do mapa para sobrepor a do player sprite. É chamada no update antes de dar blit da proxima sprite 
+        pass
+
     def update(self, display, location, direction, current_event):
         #print(direction)
         self.tick += 1
         if self.tick >= 6:
             self.f += 1
             self.tick = 0
+
+        #e preciso separar o idle do walk
+        #if current_event == "walkIdle" or current_event == "attackIdle" or current_event == "damagedIdle":
+
         if current_event == "idleWalk" or current_event == "attackWalk" or current_event == "damagedWalk" or current_event == "walkIdle" or current_event == "attackIdle" or current_event == "damagedIdle":
             # Down
-            if direction == (0,1):    
+            if direction == (0,1):
                 display.blit(self.walk_frames[0], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             # Right
             elif direction == (1,0):
@@ -99,6 +107,8 @@ class PlayerSprite:
             # Left
             elif direction == (-1,0):
                 display.blit(self.walk_frames[6], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+            
+            return "walkIdle"
 
         elif current_event == "idleAttack" or current_event == "walkAttack" or current_event == "damagedAttack":
             # Down
@@ -114,4 +124,7 @@ class PlayerSprite:
             elif direction == (-1,0):
                 display.blit(self.attack_frames_hor[5], (location[0] - 12 * SCALE, location[1], (PLAYER_SPRITE_SIZE + 15)*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             
+            return "attackIdle"
         #elif current_event == "idleDamaged" or current_event == "walkDamaged" or current_event == "damagedAttack":
+
+            #return "damagedIdle"

@@ -9,7 +9,7 @@ class State:
         pass
 
     def update(self, display, object, event):
-        object.update(display, event)
+        return object.update(display, event)
 
     def exit(self):
         # print(f"Leaving {self.name}")
@@ -80,12 +80,12 @@ class FSM:
         if event:
             trans = self._transitions.get(event)
             if trans and trans._from == self.current_state:
-                self.current_state.exit()
+                #self.current_state.exit()
                 self.current_state = trans._to
-                self.current_state.enter()
-        self.current_state.update(display, object, event)
+                #self.current_state.enter()
+        return self.current_state.update(display, object, event)
 
-        if self.current_state == self.end:
-            self.current_state.exit()
-            return False
-        return True 
+        #if self.current_state == self.end:
+        #    self.current_state.exit()
+        #    return False
+        #return True 
