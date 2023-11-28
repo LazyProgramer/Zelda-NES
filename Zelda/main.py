@@ -1,6 +1,7 @@
 import pygame
 
 import input_handler
+import actors
 
 from commandpad import COMMAND_ARROWS
 from constants import WIDTH, HEIGHT, SCALE, BACKGROUND
@@ -25,44 +26,16 @@ display_loader = Display_loader()
 pressed_keys = []
 array = {} # will contain move_map and new state
 
-# octoroc_1 = Octoroc((WIDTH*SCALE/3,HEIGHT*SCALE/2))
-# octoroc_2 = Octoroc((WIDTH*SCALE/4,HEIGHT*SCALE/2))
-# octoroc_3 = Octoroc((WIDTH*SCALE/3,HEIGHT*SCALE/3))
-# octoroc_4 = Octoroc((WIDTH*SCALE-WIDTH*SCALE/4,HEIGHT*SCALE-HEIGHT*SCALE/2))
-# octoroc_5 = Octoroc((WIDTH*SCALE-WIDTH*SCALE/3,HEIGHT*SCALE-HEIGHT*SCALE/3))
-# enemies = [octoroc_1,octoroc_2,octoroc_3,octoroc_4,octoroc_5]
-
-# octoroc = Octoroc(display, observer, (WIDTH*SCALE/3,HEIGHT*SCALE/3))
-enemies = []
 enemy_spawner = Enemy_spawner()
 
 current_event = "walkIdle"
 
-"""idle = Idle()
-walk = Walk()
-attack = Fight()
-damaged = Damaged()
 
-states = [walk, idle, attack, damaged]
-transitions = {    
-    "idleWalk": Transition(idle, walk),
-    "idleAttack": Transition(idle, attack),    
-    "idleDamaged": Transition(idle, damaged),
-    "walkIdle": Transition(walk, idle),
-    "walkAttack": Transition(walk, attack),
-    "walkDamaged": Transition(walk, damaged),
-    "attackIdle": Transition(attack, idle),
-    "attackWalk": Transition(attack, walk),
-    "attackDamaged": Transition(attack, damaged),
-    "damagedIdle": Transition(damaged, idle),
-    "damagedWalk": Transition(damaged, walk),
-    "damagedAttack": Transition(damaged, attack)
-}
+# player_1 = Player(display, observer)
+# player_1.load_sprites()
 
-fsm = FSM(states, transitions)"""
+player_1 = actors.Player(display, observer)
 
-player_1 = Player(display, observer)
-player_1.load_sprites()
 display_loader = Display_loader()
 pressed_keys = []
 
@@ -108,9 +81,8 @@ while running:
     display_loader.load_hud(display)
 
     # Load current player sprite
-    player_1.load_player()
     player_1.load_hub()
-    player_1.update(display)
+    player_1.update(current_event)
     
     current_event = player_1.stateMachine(current_event)
     # fsm.update(state_event, player_1)

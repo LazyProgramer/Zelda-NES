@@ -24,7 +24,8 @@ class PlayerSprite:
             if x < 6:
                 walk_frame = pygame.Surface((PLAYER_SPRITE_SIZE,PLAYER_SPRITE_SIZE)).convert_alpha()
 
-                self.walk_sprite_surface.blit(self.sprites, (0,0), (1 + 17 * x,11,PLAYER_SPRITE_SIZE,PLAYER_SPRITE_SIZE))
+                # self.walk_sprite_surface.blit(self.sprites, (0,0), (1 + 17 * x,11,PLAYER_SPRITE_SIZE,PLAYER_SPRITE_SIZE))
+                walk_frame.blit(self.sprites, (0,0), (1 + 17 * x,11,PLAYER_SPRITE_SIZE,PLAYER_SPRITE_SIZE))
 
                 walk_frame = pygame.transform.scale(walk_frame, (PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             else:
@@ -44,7 +45,8 @@ class PlayerSprite:
                 x -= 4
             attack_frame = pygame.Surface((PLAYER_SPRITE_SIZE,PLAYER_SPRITE_SIZE + 11)).convert_alpha()
 
-            self.attack_frames_ver.blit(self.sprites, (0,0), (94 + 17 * x,47 + 50 * l,PLAYER_SPRITE_SIZE,PLAYER_SPRITE_SIZE + 11))
+            # self.attack_frames_ver.blit(self.sprites, (0,0), (94 + 17 * x,47 + 50 * l,PLAYER_SPRITE_SIZE,PLAYER_SPRITE_SIZE + 11))
+            attack_frame.blit(self.sprites, (0,0), (94 + 17 * x,47 + 50 * l,PLAYER_SPRITE_SIZE,PLAYER_SPRITE_SIZE + 11))
 
             attack_frame = pygame.transform.scale(attack_frame, (PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
 
@@ -64,7 +66,8 @@ class PlayerSprite:
 
                 attack_frame = pygame.Surface((PLAYER_SPRITE_SIZE + extra_pixels[x],PLAYER_SPRITE_SIZE)).convert_alpha()
 
-                self.attack_frames_hor.blit(self.sprites, (0,0), (frame_coords[x],77,PLAYER_SPRITE_SIZE + extra_pixels[x],PLAYER_SPRITE_SIZE))
+                # self.attack_frames_hor.blit(self.sprites, (0,0), (frame_coords[x],77,PLAYER_SPRITE_SIZE + extra_pixels[x],PLAYER_SPRITE_SIZE))
+                attack_frame.blit(self.sprites, (0,0), (frame_coords[x],77,PLAYER_SPRITE_SIZE + extra_pixels[x],PLAYER_SPRITE_SIZE))
 
                 attack_frame = pygame.transform.scale(attack_frame, ((PLAYER_SPRITE_SIZE + extra_pixels[x])*SCALE,PLAYER_SPRITE_SIZE*SCALE))
 

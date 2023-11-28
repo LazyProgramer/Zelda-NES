@@ -18,6 +18,7 @@ class Obeserver:
         self.enemies_projectiles.append(projectile_hitbox)
 
     def notify(self, player, enemies):
+        # print(f'Sword: {self.sword_hitbox} | Enemies: {self.enemies_hitbox}')
         for e in range(len(self.enemies_hitbox)):
             
             if self.overlap(self.player_hitbox, self.enemies_hitbox[e]):

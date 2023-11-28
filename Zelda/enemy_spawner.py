@@ -14,7 +14,7 @@ class Enemy_spawner:
         y = 0
         while y < MAP_HEIGHT:
             if map_surface.get_at((x,y))[:3] == (255, 0, 0):
-                self.enemies.append(Octoroc(display, observer, (x * SCALE, (HUD_HEIGHT + y) * SCALE)))
+                self.enemies.append(Octoroc((x * SCALE, (HUD_HEIGHT + y) * SCALE), display, observer))
                 enemy_spawners.append((x,y))
             x += 1
             if x >= WIDTH:
