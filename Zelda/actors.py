@@ -40,8 +40,6 @@ class Player(Actor):
         self.hub_sprites = pygame.image.load(MYDIR+"/Sprites/HUD.png").convert()
         self.max_health = health
 
-        self.status = 0
-
         self.invulnerability_frames = 0
         self.took_damaged = 0
         self.sword_hitbox = (0,0,0,0)
@@ -95,8 +93,6 @@ class Player(Actor):
         self.player_hitbox = None
         self.sword_hitbox = None
 
-        self.status = 0
-
     # Verify is next position is possible then move
     def player_move(self, x, y):
         self._direction = (x, y)
@@ -129,6 +125,7 @@ class Player(Actor):
 
         return (0,0)
 
+    # Loads sword and hearths
     def load_hub(self):
         load_sword = pygame.Surface((SWORD_SIZE[0],SWORD_SIZE[1])).convert_alpha()
         load_sword.blit(self.hub_sprites, (0,0), (564,137,SWORD_SIZE[0],SWORD_SIZE[1]))
@@ -174,7 +171,7 @@ class Player(Actor):
 
         return self.playerSprite.update(self.display, self.location, self.get_direction(), current_event)
         
-        
+    # Define sword hitbox
     def attack(self): 
         match self._direction:
             case(-1,0):

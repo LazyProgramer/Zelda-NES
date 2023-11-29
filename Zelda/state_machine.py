@@ -28,7 +28,6 @@ class Idle(State):
         super().__init__(self.__class__.__name__)
 
     def update(self, object, event):
-        print("Object: ", object, "| Event: ", event, " 1")
         return super().update(object, event)
     
 class Walk(State):
@@ -36,7 +35,7 @@ class Walk(State):
         super().__init__(self.__class__.__name__)
 
     def update(self, object, event):
-        print("Moving")
+        # print("Moving")
         return super().update(object, event)
     
 class Fight(State):

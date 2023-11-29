@@ -8,9 +8,7 @@ from constants import WIDTH, HEIGHT, SCALE, BACKGROUND
 
 from observer import Obeserver
 
-from player import Player
 from display_loader import Display_loader
-from enemies import Octoroc
 from enemy_spawner import Enemy_spawner
 
 GAME_EVENT = pygame.event.custom_type()
@@ -66,7 +64,6 @@ while running:
     if pressed_keys:
         command = input_handler.handleInput(pressed_keys[-1])
         move_map, current_event = command().execute(player_1, current_event)
-        print(current_event)
         display_loader.update_map(move_map)
 
         if move_map != (0,0):
@@ -92,6 +89,8 @@ while running:
     for enemy in enemy_spawner.enemies:
         if enemy.health <= 0:
             enemy_spawner.enemies.remove(enemy)
+            if not enemy_spawner.enemies:
+                player_1.health += 1
         else:
             enemy.update()
             # enemy.load_enemie()
