@@ -165,7 +165,6 @@ class Player(Actor):
         # Give observer current hitboxes
         self.observer.update_player(self.player_hitbox, self.sword_hitbox)
 
-        print(current_event)
         if ("Attack" not in current_event):
             self.sword_hitbox = (0,0,0,0)
 

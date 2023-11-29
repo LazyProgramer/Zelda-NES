@@ -8,8 +8,12 @@ class PlayerSprite:
         self.attack_frames_hor = []
         self.attack_frames_ver = []
 
+        self.retract = 0
+        self.sword = 0
+
         self.f = 0
         self.tick = 0
+
 
         # self.walkUpArray = None
         # self.walkLeftArray = None
@@ -86,12 +90,12 @@ class PlayerSprite:
 
     def update(self, display, location, direction, current_event):
         self.tick += 1
-        if self.tick >= 6:
+        if self.tick >= 3:
             self.f += 1
             self.tick = 0
 
         #e preciso separar o idle do walk
-        if current_event == "walkIdle" or current_event == "damagedIdle" or current_event == "attackIdle":
+        if current_event == "walkIdle" or current_event == "damagedIdle":
             # Down
             if direction == (0,1):
                 display.blit(self.walk_frames[0], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
@@ -107,21 +111,26 @@ class PlayerSprite:
             
             return current_event
         
-        # elif current_event == "attackIdle":
-        #     # Down
-        #     if direction == (0,1):    
-        #         display.blit(self.attack_frames_ver[2 + self.f % 2], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
-        #     # Right
-        #     elif direction == (1,0):
-        #         display.blit(self.attack_frames_hor[2 + self.f % 2], (location[0], location[1], (PLAYER_SPRITE_SIZE + 15)*SCALE,PLAYER_SPRITE_SIZE*SCALE))
-        #     # Up
-        #     elif direction == (0,-1):
-        #         display.blit(self.attack_frames_ver[6 + self.f % 2], (location[0], location[1] - 12 * SCALE, PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
-        #     # Left
-        #     elif direction == (-1,0):
-        #         display.blit(self.attack_frames_hor[6 + self.f % 2], (location[0] - 12 * SCALE, location[1], (PLAYER_SPRITE_SIZE + 15)*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+        elif current_event == "attackIdle":
+            # Down
+            if direction == (0,1):
+                display.blit(self.attack_frames_ver[2 + self.retract], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
+            # Right
+            elif direction == (1,0):
+                display.blit(self.attack_frames_hor[2 + self.retract], (location[0], location[1], (PLAYER_SPRITE_SIZE + 15)*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+            # Up
+            elif direction == (0,-1):
+                display.blit(self.attack_frames_ver[6 + self.retract], (location[0], location[1] - 12 * SCALE, PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
+            # Left
+            elif direction == (-1,0):
+                display.blit(self.attack_frames_hor[6 + self.retract], (location[0] - (8 - 4 * self.retract) * SCALE, location[1], (PLAYER_SPRITE_SIZE + 15)*SCALE,PLAYER_SPRITE_SIZE*SCALE))
 
-        #     return current_event
+            if self.retract == 1:
+                self.retract = 0
+                return "walkIdle"
+            self.retract += 1
+            self.sword = 0
+            return current_event
             
         elif current_event == "idleWalk" or current_event == "attackWalk" or current_event == "damagedWalk":
             # Down
@@ -142,17 +151,18 @@ class PlayerSprite:
         elif current_event == "idleAttack" or current_event == "walkAttack" or current_event == "damagedAttack":
             # Down
             if direction == (0,1):    
-                display.blit(self.attack_frames_ver[1], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
+                display.blit(self.attack_frames_ver[0 + self.sword], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
             # Right
             elif direction == (1,0):
-                display.blit(self.attack_frames_hor[1], (location[0], location[1], (PLAYER_SPRITE_SIZE + 15)*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+                display.blit(self.attack_frames_hor[0 + self.sword], (location[0], location[1], (PLAYER_SPRITE_SIZE + 15)*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             # Up
             elif direction == (0,-1):
-                display.blit(self.attack_frames_ver[5], (location[0], location[1] - 12 * SCALE, PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
+                display.blit(self.attack_frames_ver[4 + self.sword], (location[0], location[1] - 12 * SCALE, PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
             # Left
             elif direction == (-1,0):
-                display.blit(self.attack_frames_hor[5], (location[0] - 12 * SCALE, location[1], (PLAYER_SPRITE_SIZE + 15)*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+                display.blit(self.attack_frames_hor[4 + self.sword], (location[0] - (11 * self.sword) * SCALE, location[1], (PLAYER_SPRITE_SIZE + 15)*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             
+            self.sword = 1
             return "attackIdle"
         
         #elif current_event == "idleDamaged" or current_event == "walkDamaged" or current_event == "damagedAttack":
