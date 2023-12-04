@@ -6,6 +6,8 @@ import actors
 from commandpad import COMMAND_ARROWS
 from constants import WIDTH, HEIGHT, SCALE, BACKGROUND
 
+from command import newEvent
+
 from observer import Obeserver
 
 from display_loader import Display_loader
@@ -68,6 +70,8 @@ while running:
 
         if move_map != (0,0):
             display_loader.enemy_spawners = enemy_spawner.spawn_enemy(display_loader.map_surface, display, observer)
+    else:
+        current_event = newEvent(current_event, "idle")
 
 
     # Make background black
@@ -79,9 +83,10 @@ while running:
 
     # Load current player sprite
     player_1.load_hub()
-    current_event =  player_1.update(current_event)
+    # current_event =  player_1.update(current_event)
     
-    # current_event = player_1.stateMachine(current_event)
+    print(current_event)
+    current_event = player_1.stateMachine(current_event)
     # fsm.update(state_event, player_1)
     # fsm.update(current_event, display, player_1)
 

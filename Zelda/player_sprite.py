@@ -88,6 +88,23 @@ class PlayerSprite:
     def clear(): #serve para criar uma surface da cor do mapa para sobrepor a do player sprite. É chamada no update antes de dar blit da proxima sprite 
         pass
 
+    # This would automatically switch colors if player was damaged
+    def set_colors(self, display, current_event, frame, destination):
+        if "damaged" in current_event.lower():
+            pixels = pygame.PixelArray(frame)
+            pixels.replace((200,  76, 12),(255, 255, 255))
+            pixels.replace((252, 152, 56),(252, 152,  56))
+            pixels.replace((128, 208, 16),(216,  40,   0))
+            pixels.close()
+
+        display.blit(frame, destination)
+
+        pixels = pygame.PixelArray(frame)
+        pixels.replace((255, 255, 255),(200,  76, 12))
+        pixels.replace((252, 152,  56),(252, 152, 56))
+        pixels.replace((216,  40,   0),(128, 208, 16))
+        pixels.close()
+
     def update(self, display, location, direction, current_event):
         self.tick += 1
         if self.tick >= 3:
@@ -95,76 +112,86 @@ class PlayerSprite:
             self.tick = 0
 
         #e preciso separar o idle do walk
-        if current_event == "walkIdle" or current_event == "damagedIdle":
+        if current_event == "walkIdle" or current_event == "damagedIdle" or current_event == "idleIdle":
             # Down
             if direction == (0,1):
-                display.blit(self.walk_frames[0], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+                self.set_colors(display, current_event,self.walk_frames[0], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             # Right
             elif direction == (1,0):
-                display.blit(self.walk_frames[2], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+                self.set_colors(display, current_event,self.walk_frames[2], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             # Up
             elif direction == (0,-1):
-                display.blit(self.walk_frames[4], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+                self.set_colors(display, current_event,self.walk_frames[4], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             # Left
             elif direction == (-1,0):
-                display.blit(self.walk_frames[6], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+                self.set_colors(display, current_event,self.walk_frames[6], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             
-            return current_event
+            # return current_event
         
-        elif current_event == "attackIdle":
+        elif current_event == "attackIdle" or current_event == "attackWalk":
             # Down
             if direction == (0,1):
-                display.blit(self.attack_frames_ver[2 + self.retract], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
+                self.set_colors(display, current_event,self.attack_frames_ver[2 + self.retract], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
             # Right
             elif direction == (1,0):
-                display.blit(self.attack_frames_hor[2 + self.retract], (location[0], location[1], (PLAYER_SPRITE_SIZE + 15)*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+                self.set_colors(display, current_event,self.attack_frames_hor[2 + self.retract], (location[0], location[1], (PLAYER_SPRITE_SIZE + 15)*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             # Up
             elif direction == (0,-1):
-                display.blit(self.attack_frames_ver[6 + self.retract], (location[0], location[1] - 12 * SCALE, PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
+                self.set_colors(display, current_event,self.attack_frames_ver[6 + self.retract], (location[0], location[1] - 12 * SCALE, PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
             # Left
             elif direction == (-1,0):
-                display.blit(self.attack_frames_hor[6 + self.retract], (location[0] - (8 - 4 * self.retract) * SCALE, location[1], (PLAYER_SPRITE_SIZE + 15)*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+                self.set_colors(display, current_event,self.attack_frames_hor[6 + self.retract], (location[0] - (8 - 4 * self.retract) * SCALE, location[1], (PLAYER_SPRITE_SIZE + 15)*SCALE,PLAYER_SPRITE_SIZE*SCALE))
 
             if self.retract == 1:
                 self.retract = 0
-                return "walkIdle"
+                # return "walkIdle"
             self.retract += 1
             self.sword = 0
-            return current_event
+            # return current_event
             
-        elif current_event == "idleWalk" or current_event == "attackWalk" or current_event == "damagedWalk":
+        elif current_event == "idleWalk" or current_event == "damagedWalk" or current_event == "walkWalk":
             # Down
             if direction == (0,1):
-                display.blit(self.walk_frames[0 + self.f % 2], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+                self.set_colors(display, current_event,self.walk_frames[0 + self.f % 2], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             # Right
             elif direction == (1,0):
-                display.blit(self.walk_frames[2 + self.f % 2], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+                self.set_colors(display, current_event,self.walk_frames[2 + self.f % 2], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             # Up
             elif direction == (0,-1):
-                display.blit(self.walk_frames[4 + self.f % 2], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+                self.set_colors(display, current_event,self.walk_frames[4 + self.f % 2], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             # Left
             elif direction == (-1,0):
-                display.blit(self.walk_frames[6 + self.f % 2], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+                self.set_colors(display, current_event,self.walk_frames[6 + self.f % 2], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             
-            return "walkIdle"
+            # return "walkIdle"
 
-        elif current_event == "idleAttack" or current_event == "walkAttack" or current_event == "damagedAttack":
+        elif current_event == "idleAttack" or current_event == "walkAttack" or current_event == "damagedAttack" or current_event == "attackAttack":
             # Down
             if direction == (0,1):    
-                display.blit(self.attack_frames_ver[0 + self.sword], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
+                self.set_colors(display, current_event,self.attack_frames_ver[0 + self.sword], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
             # Right
             elif direction == (1,0):
-                display.blit(self.attack_frames_hor[0 + self.sword], (location[0], location[1], (PLAYER_SPRITE_SIZE + 15)*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+                self.set_colors(display, current_event,self.attack_frames_hor[0 + self.sword], (location[0], location[1], (PLAYER_SPRITE_SIZE + 15)*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             # Up
             elif direction == (0,-1):
-                display.blit(self.attack_frames_ver[4 + self.sword], (location[0], location[1] - 12 * SCALE, PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
+                self.set_colors(display, current_event,self.attack_frames_ver[4 + self.sword], (location[0], location[1] - 12 * SCALE, PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
             # Left
             elif direction == (-1,0):
-                display.blit(self.attack_frames_hor[4 + self.sword], (location[0] - (11 * self.sword) * SCALE, location[1], (PLAYER_SPRITE_SIZE + 15)*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+                self.set_colors(display, current_event,self.attack_frames_hor[4 + self.sword], (location[0] - (11 * self.sword) * SCALE, location[1], (PLAYER_SPRITE_SIZE + 15)*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             
             self.sword = 1
-            return "attackIdle"
+            # return "attackIdle"
         
-        #elif current_event == "idleDamaged" or current_event == "walkDamaged" or current_event == "damagedAttack":
-
-            #return "damagedIdle"
+        elif current_event == "idleDamaged" or current_event == "walkDamaged" or current_event == "attackDamaged":
+            if direction == (0,1):
+                self.set_colors(display, current_event,self.walk_frames[0], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+            # Right
+            elif direction == (1,0):
+                self.set_colors(display, current_event,self.walk_frames[2], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+            # Up
+            elif direction == (0,-1):
+                self.set_colors(display, current_event,self.walk_frames[4], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+            # Left
+            elif direction == (-1,0):
+                self.set_colors(display, current_event,self.walk_frames[6], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
+            # return "damagedIdle"

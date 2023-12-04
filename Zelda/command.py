@@ -24,29 +24,29 @@ class NoCommand(Command):
         return (0,0), newEvent(current_event, "idle")
     
 def newEvent(current_event, var):
-    if current_event == "walkIdle" or current_event == "attackIdle" or current_event == "damagedIdle":
-        if var == "walk":
+    if current_event == "walkIdle" or current_event == "attackIdle" or current_event == "damagedIdle" or current_event == "idleIdle":
+        if var == "idle":
+            current_event = "idleIdle"
+        elif var == "walk":
             current_event = "idleWalk"
         elif var == "attack":
             current_event = "idleAttack"
-        elif var == "damaged":
-            current_event = "idleDamaged"
 
-    elif current_event == "idleWalk" or current_event == "attackWalk" or current_event == "damagedWalk":
+    elif current_event == "idleWalk" or current_event == "attackWalk" or current_event == "damagedWalk" or current_event == "walkWalk":
         if var == "idle":
             current_event = "walkIdle"
+        elif var == "walk":
+            current_event = "walkWalk"
         elif var == "attack":
             current_event = "walkAttack"
-        elif var == "damaged":
-            current_event = "walkDamaged"
 
-    elif current_event == "idleAttack" or current_event == "walkAttack" or current_event == "damagedAttack":
+    elif current_event == "idleAttack" or current_event == "walkAttack" or current_event == "damagedAttack" or current_event == "attackAttack":
         if var == "idle":
             current_event = "attackIdle"
         elif var == "walk":
             current_event = "attackWalk"
-        elif var == "damaged":
-            current_event = "attackDamaged"
+        elif var == "attack":
+            current_event = "attackAttack"
 
     elif current_event == "idleDamaged" or current_event == "walkDamaged" or current_event == "attackDamaged":
         if var == "idle":

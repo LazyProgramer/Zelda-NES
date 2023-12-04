@@ -1,4 +1,5 @@
 import pygame
+import re
 
 from constants import *
 from player_sprite import *
@@ -87,11 +88,11 @@ class Player(Actor):
     def get_direction(self):
         return self._direction
 
-    def set_direction(self, direction):
-        self._direction = direction
+    # def set_direction(self, direction):
+    #     self._direction = direction
 
-        self.player_hitbox = None
-        self.sword_hitbox = None
+    #     self.player_hitbox = None
+    #     self.sword_hitbox = None
 
     # Verify is next position is possible then move
     def player_move(self, x, y):
@@ -121,7 +122,7 @@ class Player(Actor):
             # Move to next position
             self.location = (self.location[0] + x*PLAYER_SPEED, self.location[1] + y*PLAYER_SPEED)
             
-            self.set_direction((x,y))
+            self._direction = (x,y)
 
         return (0,0)
 
@@ -153,10 +154,9 @@ class Player(Actor):
             self.invulnerability_frames = INVULNERABILITY_FRAMES
 
     def update(self, current_event = "idleWalk"):
-        if self.took_damaged == 1 and self.invulnerability_frames <= 0:
-            self.took_damaged = 0
-        else:
-            self.invulnerability_frames -= 1
+        # Make sure sword has a hitbox
+        if ("Attack" not in current_event):
+            self.sword_hitbox = (0,0,0,0)
 
         # Update player hitbox
         self.player_hitbox = (self.location[0], self.location[1],
@@ -165,10 +165,22 @@ class Player(Actor):
         # Give observer current hitboxes
         self.observer.update_player(self.player_hitbox, self.sword_hitbox)
 
-        if ("Attack" not in current_event):
-            self.sword_hitbox = (0,0,0,0)
+        # Update sprite
+        self.playerSprite.update(self.display, self.location, self.get_direction(), current_event)
 
-        return self.playerSprite.update(self.display, self.location, self.get_direction(), current_event)
+        # If player took damage, count invulnerability frames
+        if self.took_damaged == 1:
+            self.invulnerability_frames -= 1
+
+            # If invulnerability frames are over, player can take damage
+            if self.invulnerability_frames < 0:
+                self.took_damaged = 0
+
+            # Update state
+            if "Damaged" not in current_event:
+                current_event = re.findall('[A-Z][^A-Z]*', current_event)[-1].lower() + "Damaged"
+
+        return current_event
         
     # Define sword hitbox
     def attack(self): 
