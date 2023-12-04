@@ -14,12 +14,6 @@ class PlayerSprite:
         self.f = 0
         self.tick = 0
 
-
-        # self.walkUpArray = None
-        # self.walkLeftArray = None
-        # self.walkRightArray = None
-        # self.walkDownArray = None
-
     def load_sprites(self):
         # Save all frames in 1 array
         # Frames are organized in the following order : Down > Right > Up > Left;
@@ -88,30 +82,35 @@ class PlayerSprite:
     def clear(): #serve para criar uma surface da cor do mapa para sobrepor a do player sprite. É chamada no update antes de dar blit da proxima sprite 
         pass
 
-    # This would automatically switch colors if player was damaged
+    # This will automatically switch colors if player was damaged
     def set_colors(self, display, current_event, frame, destination):
+        # Replace colors with damaged colors
         if "damaged" in current_event.lower():
             pixels = pygame.PixelArray(frame)
             pixels.replace((200,  76, 12),(255, 255, 255))
             pixels.replace((252, 152, 56),(252, 152,  56))
             pixels.replace((128, 208, 16),(216,  40,   0))
             pixels.close()
+        
+        # Replace colors back to original colors
+        else:
+            pixels = pygame.PixelArray(frame)
+            pixels.replace((255, 255, 255),(200,  76, 12))
+            pixels.replace((252, 152,  56),(252, 152, 56))
+            pixels.replace((216,  40,   0),(128, 208, 16))
+            pixels.close()
 
+        # Load sprite
         display.blit(frame, destination)
 
-        pixels = pygame.PixelArray(frame)
-        pixels.replace((255, 255, 255),(200,  76, 12))
-        pixels.replace((252, 152,  56),(252, 152, 56))
-        pixels.replace((216,  40,   0),(128, 208, 16))
-        pixels.close()
-
     def update(self, display, location, direction, current_event):
+        # Count tick to help with walk animation, each tick switch frame
         self.tick += 1
         if self.tick >= 3:
             self.f += 1
             self.tick = 0
 
-        #e preciso separar o idle do walk
+        # Load idle sprite
         if current_event == "walkIdle" or current_event == "damagedIdle" or current_event == "idleIdle":
             # Down
             if direction == (0,1):
@@ -125,9 +124,8 @@ class PlayerSprite:
             # Left
             elif direction == (-1,0):
                 self.set_colors(display, current_event,self.walk_frames[6], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
-            
-            # return current_event
         
+        # Load last 2 frames of attack animation
         elif current_event == "attackIdle" or current_event == "attackWalk":
             # Down
             if direction == (0,1):
@@ -144,11 +142,10 @@ class PlayerSprite:
 
             if self.retract == 1:
                 self.retract = 0
-                # return "walkIdle"
             self.retract += 1
             self.sword = 0
-            # return current_event
             
+        # Load walk animation
         elif current_event == "idleWalk" or current_event == "damagedWalk" or current_event == "walkWalk":
             # Down
             if direction == (0,1):
@@ -163,8 +160,7 @@ class PlayerSprite:
             elif direction == (-1,0):
                 self.set_colors(display, current_event,self.walk_frames[6 + self.f % 2], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             
-            # return "walkIdle"
-
+        # Load first 2 frames of attack animation
         elif current_event == "idleAttack" or current_event == "walkAttack" or current_event == "damagedAttack" or current_event == "attackAttack":
             # Down
             if direction == (0,1):    
@@ -180,8 +176,8 @@ class PlayerSprite:
                 self.set_colors(display, current_event,self.attack_frames_hor[4 + self.sword], (location[0] - (11 * self.sword) * SCALE, location[1], (PLAYER_SPRITE_SIZE + 15)*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             
             self.sword = 1
-            # return "attackIdle"
-        
+
+        # Load damaged frame
         elif current_event == "idleDamaged" or current_event == "walkDamaged" or current_event == "attackDamaged":
             if direction == (0,1):
                 self.set_colors(display, current_event,self.walk_frames[0], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
@@ -194,4 +190,3 @@ class PlayerSprite:
             # Left
             elif direction == (-1,0):
                 self.set_colors(display, current_event,self.walk_frames[6], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
-            # return "damagedIdle"
