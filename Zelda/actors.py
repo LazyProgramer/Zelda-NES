@@ -88,12 +88,6 @@ class Player(Actor):
     def get_direction(self):
         return self._direction
 
-    # def set_direction(self, direction):
-    #     self._direction = direction
-
-    #     self.player_hitbox = None
-    #     self.sword_hitbox = None
-
     # Verify is next position is possible then move
     def player_move(self, x, y):
         self._direction = (x, y)
@@ -126,7 +120,7 @@ class Player(Actor):
 
         return (0,0)
 
-    # Loads sword and hearths
+    # Loads sword and hearths on the hud
     def load_hub(self):
         load_sword = pygame.Surface((SWORD_SIZE[0],SWORD_SIZE[1])).convert_alpha()
         load_sword.blit(self.hub_sprites, (0,0), (564,137,SWORD_SIZE[0],SWORD_SIZE[1]))
