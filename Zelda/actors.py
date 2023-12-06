@@ -5,6 +5,7 @@ from constants import *
 from player_sprite import *
 from state_machine import *
 from projectiles import *
+from state import *
 
 class Actor:
     def __init__(self, location, display, observer, health, size):
@@ -55,23 +56,23 @@ class Player(Actor):
         self.states = [self.walk, self.idle, self.fight, self.damaged]
 
         self.transitions = {    
-            "idleWalk": Transition(self.idle, self.walk),
-            "idleAttack": Transition(self.idle, self.fight),    
-            "idleDamaged": Transition(self.idle, self.damaged),
-            "walkIdle": Transition(self.walk, self.idle),
-            "walkAttack": Transition(self.walk, self.fight),
-            "walkDamaged": Transition(self.walk, self.damaged),
-            "attackIdle": Transition(self.fight, self.idle),
-            "attackWalk": Transition(self.fight, self.walk),
-            "attackDamaged": Transition(self.fight, self.damaged),
-            "damagedIdle": Transition(self.damaged, self.idle),
-            "damagedWalk": Transition(self.damaged, self.walk),
-            "damagedAttack": Transition(self.damaged, self.fight)
+            State.IDLEWALK: Transition(self.idle, self.walk),
+            State.IDLEATTACK: Transition(self.idle, self.fight),    
+            State.IDLEDAMAGED: Transition(self.idle, self.damaged),
+            State.WALKIDLE: Transition(self.walk, self.idle),
+            State.WALKATTACK: Transition(self.walk, self.fight),
+            State.WALKDAMAGED: Transition(self.walk, self.damaged),
+            State.ATTACKIDLE: Transition(self.fight, self.idle),
+            State.ATTACKWALK: Transition(self.fight, self.walk),
+            State.ATTACKDAMAGED: Transition(self.fight, self.damaged),
+            State.DAMAGEDIDLE: Transition(self.damaged, self.idle),
+            State.DAMAGEDWALK: Transition(self.damaged, self.walk),
+            State.DAMAGEDATTACK: Transition(self.damaged, self.fight)
         }
 
         self.fsm = FSM(self.states, self.transitions)
 
-        self.left = LeftLeg()
+        """self.left = LeftLeg()
         self.right = RightLeg()
 
         self.spriteStates = [self.left, self.right]
@@ -81,7 +82,7 @@ class Player(Actor):
             "rightLeft": Transition(self.right, self.left)
         }
 
-        self.spriteFSM = FSM(self.spriteStates, self.spriteTransitions)
+        self.spriteFSM = FSM(self.spriteStates, self.spriteTransitions)"""
 
         self.playerSprite.load_sprites()
 
@@ -147,9 +148,9 @@ class Player(Actor):
             self.health -= 0.5
             self.invulnerability_frames = INVULNERABILITY_FRAMES
 
-    def update(self, current_event = "idleWalk"):
+    def update(self, current_event = State.IDLEWALK):
         # Make sure sword has a hitbox
-        if ("Attack" not in current_event):
+        if (current_event < 30 or current_event > 39): #if "Attack" is not in current_event
             self.sword_hitbox = (0,0,0,0)
 
         # Update player hitbox
@@ -171,8 +172,8 @@ class Player(Actor):
                 self.took_damaged = 0
 
             # Update state
-            if "Damaged" not in current_event:
-                current_event = re.findall('[A-Z][^A-Z]*', current_event)[-1].lower() + "Damaged"
+            if current_event < 40: #if "Damaged" is not in current_event
+                current_event = 40 + current_event // 10  #current_event = re.findall('[A-Z][^A-Z]*', current_event)[-1].lower() + "Damaged"
 
         return current_event
         

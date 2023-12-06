@@ -12,6 +12,7 @@ from observer import Obeserver
 
 from display_loader import Display_loader
 from enemy_spawner import Enemy_spawner
+from state import *
 
 GAME_EVENT = pygame.event.custom_type()
 
@@ -28,7 +29,7 @@ array = {} # will contain move_map and new state
 
 enemy_spawner = Enemy_spawner()
 
-current_event = "walkIdle"
+current_event = State.WALKIDLE #"walkIdle"
 
 
 # player_1 = Player(display, observer)
@@ -71,7 +72,7 @@ while running:
         if move_map != (0,0):
             display_loader.enemy_spawners = enemy_spawner.spawn_enemy(display_loader.map_surface, display, observer)
     else:
-        current_event = newEvent(current_event, "idle")
+        current_event = newEvent(current_event, State.IDLEIDLE)
 
 
     # Make background black
