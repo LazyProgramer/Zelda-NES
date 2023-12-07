@@ -25,6 +25,7 @@ class NoCommand(Command):
     def execute(self, actor, current_event):
         return (0,0), newEvent(current_event, State.IDLEIDLE)
     
+#Get new event
 def newEvent(current_event, var):
     if current_event < 20:    #if it's any transition to idle
         if var == 11:

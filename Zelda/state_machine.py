@@ -50,6 +50,7 @@ class FSM:
         self._transitions = transitions
         self.current_state: State = self._states[0]
 
+    #Changes event and updates
     def update(self, event, object):
         if event:
             trans = self._transitions.get(event)

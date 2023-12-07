@@ -72,18 +72,6 @@ class Player(Actor):
 
         self.fsm = FSM(self.states, self.transitions)
 
-        """self.left = LeftLeg()
-        self.right = RightLeg()
-
-        self.spriteStates = [self.left, self.right]
-
-        self.spriteTransitions = {
-            "leftRight": Transition(self.left, self.right),
-            "rightLeft": Transition(self.right, self.left)
-        }
-
-        self.spriteFSM = FSM(self.spriteStates, self.spriteTransitions)"""
-
         self.playerSprite.load_sprites()
 
     def get_direction(self):
