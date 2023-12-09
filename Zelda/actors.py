@@ -79,8 +79,6 @@ class Player(Actor):
 
     # Verify is next position is possible then move
     def player_move(self, x, y):
-        self._direction = (x, y)
-
         # Map update, updates map if player leaves playble area
         # PLAYER_SPEED is here or we can cause seizure
         # Load map to the left
@@ -111,10 +109,10 @@ class Player(Actor):
 
     # Loads sword and hearths on the hud
     def load_hub(self):
-        load_sword = pygame.Surface((SWORD_SIZE[0],SWORD_SIZE[1])).convert_alpha()
-        load_sword.blit(self.hub_sprites, (0,0), (564,137,SWORD_SIZE[0],SWORD_SIZE[1]))
-        load_sword = pygame.transform.scale(load_sword, (SWORD_SIZE[0]*SCALE,SWORD_SIZE[1]*SCALE))
-        self.display.blit(load_sword, (128*SCALE,24*SCALE, SWORD_SIZE[0]*SCALE,SWORD_SIZE[1]*SCALE))
+        load_sword = pygame.Surface((SWORD_SPRIT_SIZE[0],SWORD_SPRIT_SIZE[1])).convert_alpha()
+        load_sword.blit(self.hub_sprites, (0,0), (564,137,SWORD_SPRIT_SIZE[0],SWORD_SPRIT_SIZE[1]))
+        load_sword = pygame.transform.scale(load_sword, (SWORD_SPRIT_SIZE[0]*SCALE,SWORD_SPRIT_SIZE[1]*SCALE))
+        self.display.blit(load_sword, (128*SCALE,24*SCALE, SWORD_SPRIT_SIZE[0]*SCALE,SWORD_SPRIT_SIZE[1]*SCALE))
         
         for x in range(self.max_health):
             load_heath = pygame.Surface((HEATH_SIZE,HEATH_SIZE)).convert_alpha()
@@ -166,23 +164,25 @@ class Player(Actor):
         return current_event
         
     # Define sword hitbox
-    def attack(self): 
+    def attack(self):
+        # 7 is the number of air pixels above the sword on the vertical attack sprite
+        # 4 and 6 are the number of air pixels on the left the sword on the hotizontal attack sprites
         match self._direction:
             case(-1,0):
-                self.sword_hitbox = (self.location[0]-PLAYER_HITBOX+9, self.location[1]+7*3,
-                                     self.location[0]-PLAYER_HITBOX+9+13*3, self.location[1]+7*3+12)
+                self.sword_hitbox = (self.location[0]                        , self.location[1] + 7 * SCALE,
+                                     self.location[0] - SWORD_SIZE[1] * SCALE, self.location[1] + (7 + SWORD_SIZE[0]) * SCALE)
 
             case(1,0):
-                self.sword_hitbox = (self.location[0]+PLAYER_HITBOX-15+9, self.location[1]+7*3,
-                                     self.location[0]+PLAYER_HITBOX-15+16*3, self.location[1]+7*3+12)
+                self.sword_hitbox = (self.location[0] + PLAYER_HITBOX                        , self.location[1] + 7 * SCALE,
+                                     self.location[0] + PLAYER_HITBOX + SWORD_SIZE[1] * SCALE, self.location[1] + (7 + SWORD_SIZE[0]) * SCALE)
 
             case(0,-1):
-                self.sword_hitbox = (self.location[0]+4*3, self.location[1]-13*3,
-                                     self.location[0]+4*3+4*3, self.location[1]-13*3+13*3)
+                self.sword_hitbox = (self.location[0] +  4 * SCALE                 , self.location[1] - SWORD_SIZE[1] * SCALE,
+                                     self.location[0] + (4 + SWORD_SIZE[0]) * SCALE, self.location[1])
 
             case(0,1):
-                self.sword_hitbox = (self.location[0]+5*3, self.location[1]+PLAYER_HITBOX-12+6,
-                                     self.location[0]+5*3+5*3, self.location[1]+PLAYER_HITBOX-12+15*3)
+                self.sword_hitbox = (self.location[0] +  6 * SCALE                 , self.location[1] + PLAYER_HITBOX,
+                                     self.location[0] + (6 + SWORD_SIZE[0]) * SCALE, self.location[1] + PLAYER_HITBOX + SWORD_SIZE[1] * SCALE)
         return (0,0)
     
     def stateMachine(self, current_event):
