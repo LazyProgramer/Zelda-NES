@@ -5,6 +5,7 @@ from constants import *
 from player_sprite import *
 from state_machine import *
 from projectiles import *
+from state import *
 
 class Actor:
     def __init__(self, location, display, observer, health, size):
@@ -55,33 +56,21 @@ class Player(Actor):
         self.states = [self.walk, self.idle, self.fight, self.damaged]
 
         self.transitions = {    
-            "idleWalk": Transition(self.idle, self.walk),
-            "idleAttack": Transition(self.idle, self.fight),    
-            "idleDamaged": Transition(self.idle, self.damaged),
-            "walkIdle": Transition(self.walk, self.idle),
-            "walkAttack": Transition(self.walk, self.fight),
-            "walkDamaged": Transition(self.walk, self.damaged),
-            "attackIdle": Transition(self.fight, self.idle),
-            "attackWalk": Transition(self.fight, self.walk),
-            "attackDamaged": Transition(self.fight, self.damaged),
-            "damagedIdle": Transition(self.damaged, self.idle),
-            "damagedWalk": Transition(self.damaged, self.walk),
-            "damagedAttack": Transition(self.damaged, self.fight)
+            State.IDLEWALK: Transition(self.idle, self.walk),
+            State.IDLEATTACK: Transition(self.idle, self.fight),    
+            State.IDLEDAMAGED: Transition(self.idle, self.damaged),
+            State.WALKIDLE: Transition(self.walk, self.idle),
+            State.WALKATTACK: Transition(self.walk, self.fight),
+            State.WALKDAMAGED: Transition(self.walk, self.damaged),
+            State.ATTACKIDLE: Transition(self.fight, self.idle),
+            State.ATTACKWALK: Transition(self.fight, self.walk),
+            State.ATTACKDAMAGED: Transition(self.fight, self.damaged),
+            State.DAMAGEDIDLE: Transition(self.damaged, self.idle),
+            State.DAMAGEDWALK: Transition(self.damaged, self.walk),
+            State.DAMAGEDATTACK: Transition(self.damaged, self.fight)
         }
 
         self.fsm = FSM(self.states, self.transitions)
-
-        self.left = LeftLeg()
-        self.right = RightLeg()
-
-        self.spriteStates = [self.left, self.right]
-
-        self.spriteTransitions = {
-            "leftRight": Transition(self.left, self.right),
-            "rightLeft": Transition(self.right, self.left)
-        }
-
-        self.spriteFSM = FSM(self.spriteStates, self.spriteTransitions)
 
         self.playerSprite.load_sprites()
 
@@ -90,8 +79,6 @@ class Player(Actor):
 
     # Verify is next position is possible then move
     def player_move(self, x, y):
-        self._direction = (x, y)
-
         # Map update, updates map if player leaves playble area
         # PLAYER_SPEED is here or we can cause seizure
         # Load map to the left
@@ -122,10 +109,10 @@ class Player(Actor):
 
     # Loads sword and hearths on the hud
     def load_hub(self):
-        load_sword = pygame.Surface((SWORD_SIZE[0],SWORD_SIZE[1])).convert_alpha()
-        load_sword.blit(self.hub_sprites, (0,0), (564,137,SWORD_SIZE[0],SWORD_SIZE[1]))
-        load_sword = pygame.transform.scale(load_sword, (SWORD_SIZE[0]*SCALE,SWORD_SIZE[1]*SCALE))
-        self.display.blit(load_sword, (128*SCALE,24*SCALE, SWORD_SIZE[0]*SCALE,SWORD_SIZE[1]*SCALE))
+        load_sword = pygame.Surface((SWORD_SPRIT_SIZE[0],SWORD_SPRIT_SIZE[1])).convert_alpha()
+        load_sword.blit(self.hub_sprites, (0,0), (564,137,SWORD_SPRIT_SIZE[0],SWORD_SPRIT_SIZE[1]))
+        load_sword = pygame.transform.scale(load_sword, (SWORD_SPRIT_SIZE[0]*SCALE,SWORD_SPRIT_SIZE[1]*SCALE))
+        self.display.blit(load_sword, (128*SCALE,24*SCALE, SWORD_SPRIT_SIZE[0]*SCALE,SWORD_SPRIT_SIZE[1]*SCALE))
         
         for x in range(self.max_health):
             load_heath = pygame.Surface((HEATH_SIZE,HEATH_SIZE)).convert_alpha()
@@ -147,9 +134,9 @@ class Player(Actor):
             self.health -= 0.5
             self.invulnerability_frames = INVULNERABILITY_FRAMES
 
-    def update(self, current_event = "idleWalk"):
+    def update(self, current_event = State.IDLEWALK):
         # Make sure sword has a hitbox
-        if ("Attack" not in current_event):
+        if (current_event < 30 or current_event > 39): #if "Attack" is not in current_event
             self.sword_hitbox = (0,0,0,0)
 
         # Update player hitbox
@@ -171,29 +158,31 @@ class Player(Actor):
                 self.took_damaged = 0
 
             # Update state
-            if "Damaged" not in current_event:
-                current_event = re.findall('[A-Z][^A-Z]*', current_event)[-1].lower() + "Damaged"
+            if current_event < 40: #if "Damaged" is not in current_event
+                current_event = 40 + current_event // 10  #current_event = re.findall('[A-Z][^A-Z]*', current_event)[-1].lower() + "Damaged"
 
         return current_event
         
     # Define sword hitbox
-    def attack(self): 
+    def attack(self):
+        # 7 is the number of air pixels above the sword on the vertical attack sprite
+        # 4 and 6 are the number of air pixels on the left the sword on the hotizontal attack sprites
         match self._direction:
             case(-1,0):
-                self.sword_hitbox = (self.location[0]-PLAYER_HITBOX+9, self.location[1]+7*3,
-                                     self.location[0]-PLAYER_HITBOX+9+13*3, self.location[1]+7*3+12)
+                self.sword_hitbox = (self.location[0]                        , self.location[1] + 7 * SCALE,
+                                     self.location[0] - SWORD_SIZE[1] * SCALE, self.location[1] + (7 + SWORD_SIZE[0]) * SCALE)
 
             case(1,0):
-                self.sword_hitbox = (self.location[0]+PLAYER_HITBOX-15+9, self.location[1]+7*3,
-                                     self.location[0]+PLAYER_HITBOX-15+16*3, self.location[1]+7*3+12)
+                self.sword_hitbox = (self.location[0] + PLAYER_HITBOX                        , self.location[1] + 7 * SCALE,
+                                     self.location[0] + PLAYER_HITBOX + SWORD_SIZE[1] * SCALE, self.location[1] + (7 + SWORD_SIZE[0]) * SCALE)
 
             case(0,-1):
-                self.sword_hitbox = (self.location[0]+4*3, self.location[1]-13*3,
-                                     self.location[0]+4*3+4*3, self.location[1]-13*3+13*3)
+                self.sword_hitbox = (self.location[0] +  4 * SCALE                 , self.location[1] - SWORD_SIZE[1] * SCALE,
+                                     self.location[0] + (4 + SWORD_SIZE[0]) * SCALE, self.location[1])
 
             case(0,1):
-                self.sword_hitbox = (self.location[0]+5*3, self.location[1]+PLAYER_HITBOX-12+6,
-                                     self.location[0]+5*3+5*3, self.location[1]+PLAYER_HITBOX-12+15*3)
+                self.sword_hitbox = (self.location[0] +  6 * SCALE                 , self.location[1] + PLAYER_HITBOX,
+                                     self.location[0] + (6 + SWORD_SIZE[0]) * SCALE, self.location[1] + PLAYER_HITBOX + SWORD_SIZE[1] * SCALE)
         return (0,0)
     
     def stateMachine(self, current_event):

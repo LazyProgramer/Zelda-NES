@@ -1,4 +1,5 @@
 import pygame
+from state import *
 from constants import MYDIR, SCALE, SET_COLOR, PLAYER_SPRITE_SIZE
 
 class PlayerSprite:
@@ -85,7 +86,7 @@ class PlayerSprite:
     # This will automatically switch colors if player was damaged
     def set_colors(self, display, current_event, frame, destination):
         # Replace colors with damaged colors
-        if "damaged" in current_event.lower():
+        if current_event % 10 == 4 or current_event > 40:    #"damaged" in current_event.lower():
             pixels = pygame.PixelArray(frame)
             pixels.replace((200,  76, 12),(255, 255, 255))
             pixels.replace((252, 152, 56),(252, 152,  56))
@@ -111,7 +112,7 @@ class PlayerSprite:
             self.tick = 0
 
         # Load idle sprite
-        if current_event == "walkIdle" or current_event == "damagedIdle" or current_event == "idleIdle":
+        if current_event < 20:  #if it's any transition to idle
             # Down
             if direction == (0,1):
                 self.set_colors(display, current_event,self.walk_frames[0], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
@@ -126,7 +127,7 @@ class PlayerSprite:
                 self.set_colors(display, current_event,self.walk_frames[6], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
         
         # Load last 2 frames of attack animation
-        elif current_event == "attackIdle" or current_event == "attackWalk":
+        elif current_event == 13 or current_event == 23:  #if transition is attack - idle or attack - walk, respectively
             # Down
             if direction == (0,1):
                 self.set_colors(display, current_event,self.attack_frames_ver[2 + self.retract], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
@@ -146,7 +147,7 @@ class PlayerSprite:
             self.sword = 0
             
         # Load walk animation
-        elif current_event == "idleWalk" or current_event == "damagedWalk" or current_event == "walkWalk":
+        elif current_event in range(21, 31):  #if it's any transition to walk
             # Down
             if direction == (0,1):
                 self.set_colors(display, current_event,self.walk_frames[0 + self.f % 2], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
@@ -161,7 +162,7 @@ class PlayerSprite:
                 self.set_colors(display, current_event,self.walk_frames[6 + self.f % 2], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             
         # Load first 2 frames of attack animation
-        elif current_event == "idleAttack" or current_event == "walkAttack" or current_event == "damagedAttack" or current_event == "attackAttack":
+        elif current_event in range(31, 41):  #if it's any transition to attack
             # Down
             if direction == (0,1):    
                 self.set_colors(display, current_event,self.attack_frames_ver[0 + self.sword], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,(PLAYER_SPRITE_SIZE + 11)*SCALE))
@@ -178,7 +179,7 @@ class PlayerSprite:
             self.sword = 1
 
         # Load damaged frame
-        elif current_event == "idleDamaged" or current_event == "walkDamaged" or current_event == "attackDamaged":
+        elif current_event > 40:  #if it's any transition to damaged
             if direction == (0,1):
                 self.set_colors(display, current_event,self.walk_frames[0], (location[0], location[1], PLAYER_SPRITE_SIZE*SCALE,PLAYER_SPRITE_SIZE*SCALE))
             # Right
