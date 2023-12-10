@@ -21,12 +21,9 @@ class Actor:
 
     def check_next_position(self, x, y):
         l = ((x + y)+1)/2
-        m = 1
-        n = 0
+        n = abs(x)                      
+        m = abs(y)
 
-        if x != 0:
-            m = 0
-            n = 1
         # Funny calculation to have 1 if statement instead of 8
         for i in range(int(self.location[n]), int(self.location[n]+self.size*SCALE)):
             if self.display.get_at(((int((self.location[m]+x)*n + i*m + self.border*l*n)),
